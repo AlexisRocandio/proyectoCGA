@@ -1,0 +1,7 @@
+[
+{
+  "directory": "C:/Users/Administrador/Desktop/Proyecto final/ShootInTheSpace/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe -DBUILDING_DLL @CMakeFiles/proyecto.dir/includes_CXX.rsp -g -o CMakeFiles\\proyecto.dir\\src\\main.obj -c \"C:\\Users\\Administrador\\Desktop\\Proyecto final\\ShootInTheSpace\\src\\main.cpp\"",
+  "file": "C:/Users/Administrador/Desktop/Proyecto final/ShootInTheSpace/src/main.cpp"
+}
+]

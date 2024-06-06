@@ -1,0 +1,1 @@
+  -L../external/assimp/lib  -L../external/glfw/lib  -L../external/Freetype/lib  -L../external/FreeImage/lib  -L../external/glew/lib  -L../external/freealut/lib  -L../external/OpenAL/lib/x64  -lopengl32 -lglfw3dll -lglew32 -lassimp -lfreetype -lalut -lOpenAL32 -lCGALib -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 
