@@ -101,8 +101,10 @@ Box boxViewDepth;
 Model modelLamp1;
 Model modelLamp2;
 Model modelLampPost2;
-// Mayow
-Model mayowModelAnimate;
+// tie
+Model TieModel;
+Model t47Model;
+Model xwingModel;
 // Terrain model instance
 Terrain terrain(-1, -1, 200, 8, "../Textures/heightmap.png");
 
@@ -141,10 +143,10 @@ int lastMousePosY, offsetY = 0;
 
 // Model matrix definitions
 
-glm::mat4 modelMatrixMayow = glm::mat4(1.0f);
+glm::mat4 MatrixTieModel = glm::mat4(1.0f);
 
 
-int animationMayowIndex = 1;
+int animTie = 1;
 float rotDartHead = 0.0, rotDartLeftArm = 0.0, rotDartLeftHand = 0.0, rotDartRightArm = 0.0, rotDartRightHand = 0.0, rotDartLeftLeg = 0.0, rotDartRightLeg = 0.0;
 float rotBuzzHead = 0.0, rotBuzzLeftarm = 0.0, rotBuzzLeftForeArm = 0.0, rotBuzzLeftHand = 0.0;
 int modelSelected = 0;
@@ -155,6 +157,48 @@ bool saveFrame = false, availableSave = true;
 std::ofstream myfile;
 std::string fileName = "";
 bool record = false;
+
+
+// Posiciones para el nivel fácil
+std::vector<glm::vec3> easyPositionsT47 = {
+    glm::vec3(10.0f, 0.0f, -20.0f),
+    glm::vec3(15.0f, 0.0f, -25.0f)
+};
+
+std::vector<glm::vec3> easyPositionsXwing = {
+    glm::vec3(20.0f, 0.0f, -30.0f),
+    glm::vec3(25.0f, 0.0f, -35.0f)
+};
+
+// Posiciones para el nivel medio
+std::vector<glm::vec3> mediumPositionsT47 = {
+    glm::vec3(10.0f, 0.0f, -20.0f),
+    glm::vec3(15.0f, 0.0f, -25.0f),
+    glm::vec3(30.0f, 0.0f, -40.0f)
+};
+
+std::vector<glm::vec3> mediumPositionsXwing = {
+    glm::vec3(20.0f, 0.0f, -30.0f),
+    glm::vec3(25.0f, 0.0f, -35.0f),
+    glm::vec3(35.0f, 0.0f, -45.0f)
+};
+
+// Posiciones para el nivel difícil
+std::vector<glm::vec3> hardPositionsT47 = {
+    glm::vec3(10.0f, 0.0f, -20.0f),
+    glm::vec3(15.0f, 0.0f, -25.0f),
+    glm::vec3(30.0f, 0.0f, -40.0f),
+    glm::vec3(40.0f, 0.0f, -50.0f)
+};
+
+std::vector<glm::vec3> hardPositionsXwing = {
+    glm::vec3(20.0f, 0.0f, -30.0f),
+    glm::vec3(25.0f, 0.0f, -35.0f),
+    glm::vec3(35.0f, 0.0f, -45.0f),
+    glm::vec3(45.0f, 0.0f, -55.0f)
+};
+
+
 
 // Lamps position
 std::vector<glm::vec3> lamp1Position = {
@@ -350,9 +394,17 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelLampPost2.loadModel("../models/Street_Light/LampPost.obj");
 	modelLampPost2.setShader(&shaderMulLighting);
 
-	// Mayow
-	mayowModelAnimate.loadModel("../models/Tie/Tie.fbx");
-	mayowModelAnimate.setShader(&shaderMulLighting);
+	// tie
+	TieModel.loadModel("../models/T47/T47.fbx");
+	TieModel.setShader(&shaderMulLighting);
+
+	t47Model.loadModel("../models/T47/t48.fbx");
+	t47Model.setShader(&shaderMulLighting);
+
+	xwingModel.loadModel("../models/Xwing/XWing.fbx");
+	xwingModel.setShader(&shaderMulLighting);
+
+
 
 	// Terreno
 	terrain.init();
@@ -700,7 +752,7 @@ void destroy() {
 	modelLamp1.destroy();
 	modelLamp2.destroy();
 	modelLampPost2.destroy();
-	mayowModelAnimate.destroy();
+	TieModel.destroy();
 
 	// Terrains objects Delete
 	terrain.destroy();
@@ -836,11 +888,11 @@ if(!iniciaPartida){
 		std::cout << "Right Trigger/R2: " << axes[5] << std::endl;
 
 		if(fabs(axes[1]) > 0.2){
-			modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, -axes[1] * 0.1));
-			animationMayowIndex = 0;
+			MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0, 0, -axes[1] * 0.1));
+			animTie = 0;
 		}if(fabs(axes[0]) > 0.2){
-			modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-axes[0] * 0.5f), glm::vec3(0, 1, 0));
-			animationMayowIndex = 0;
+			MatrixTieModel = glm::rotate(MatrixTieModel, glm::radians(-axes[0] * 0.5f), glm::vec3(0, 1, 0));
+			animTie = 0;
 		}
 
 		if(fabs(axes[3]) > 0.2){
@@ -884,28 +936,28 @@ if(!iniciaPartida){
 		availableSave = true;
 
 
-	// Controles de mayow
+	// Controles de tie
 	if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
-		modelMatrixMayow = glm::rotate(modelMatrixMayow, 0.02f, glm::vec3(0, 1, 0));
-		animationMayowIndex = 0;
+		MatrixTieModel = glm::rotate(MatrixTieModel, 0.02f, glm::vec3(0, 1, 0));
+		animTie = 0;
 	} else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
-		modelMatrixMayow = glm::rotate(modelMatrixMayow, -0.02f, glm::vec3(0, 1, 0));
-		animationMayowIndex = 0;
+		MatrixTieModel = glm::rotate(MatrixTieModel, -0.02f, glm::vec3(0, 1, 0));
+		animTie = 0;
 	}
 	if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
-		modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0, 0.0, 0.02));
-		animationMayowIndex = 0;
+		MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.0, 0.02));
+		animTie = 0;
 	}
 	else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
-		modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0, 0.0, -0.02));
-		animationMayowIndex = 0;
+		MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.0, -0.02));
+		animTie = 0;
 	}else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
-		modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0, 0.5, 0.0));
-		animationMayowIndex = 0;
+		MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.5, 0.0));
+		animTie = 0;
 	}
 	else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS){
-		modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0, -0.5, 0.0));
-		animationMayowIndex = 0;
+		MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, -0.5, 0.0));
+		animTie = 0;
 	}
 
 	bool keySpaceStatus = glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
@@ -927,8 +979,8 @@ void prepareScene(){
 	modelLamp2.setShader(&shaderMulLighting);
 	modelLampPost2.setShader(&shaderMulLighting);
 
-	//Mayow
-	mayowModelAnimate.setShader(&shaderMulLighting);
+	//tie
+	TieModel.setShader(&shaderMulLighting);
 }
 
 void prepareDepthScene(){
@@ -939,8 +991,8 @@ void prepareDepthScene(){
 	modelLamp1.setShader(&shaderDepth);
 	modelLamp2.setShader(&shaderDepth);
 	modelLampPost2.setShader(&shaderDepth);
-	//Mayow
-	mayowModelAnimate.setShader(&shaderDepth);
+	//tie
+	TieModel.setShader(&shaderDepth);
 }
 
 void renderSolidScene(){
@@ -996,27 +1048,62 @@ void renderSolidScene(){
 		modelLampPost2.setOrientation(glm::vec3(0, lamp2Orientation[i], 0));
 		modelLampPost2.render();
 	}
+
+
+	// Renderizar modelos según el nivel de dificultad
+	std::vector<glm::vec3> positionsT47;
+	std::vector<glm::vec3> positionsXwing;
+
+	if (level == 1) { // Fácil
+		positionsT47 = easyPositionsT47;
+		positionsXwing = easyPositionsXwing;
+	} else if (level == 2) { // Medio
+		positionsT47 = easyPositionsT47;
+		positionsXwing = mediumPositionsXwing;
+	} else if (level == 3) { // Difícil
+		positionsT47 = easyPositionsT47;
+		positionsXwing = hardPositionsXwing;
+	}
+
+	// Renderizar t47Model en las posiciones especificadas
+	for (const glm::vec3 &pos : positionsT47) {
+		glm::vec3 posInTerrain = pos;
+		posInTerrain.y = terrain.getHeightTerrain(pos.x, pos.z);
+		t47Model.setPosition(posInTerrain);
+		t47Model.setScale(glm::vec3(1.0f));
+		t47Model.render();
+	}
+
+	// Renderizar XwingModel en las posiciones especificadas
+	for (const glm::vec3 &pos : positionsXwing) {
+		glm::vec3 posInTerrain = pos;
+		posInTerrain.y = terrain.getHeightTerrain(pos.x, pos.z);
+		xwingModel.setPosition(posInTerrain);
+		xwingModel.setScale(glm::vec3(1.0f));
+		xwingModel.render();
+	}
+
 	/*****************************************
 	 * Objetos animados por huesos
 	 * **************************************/
-	/*glm::vec3 ejey = glm::normalize(terrain.getNormalTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2]));
-	glm::vec3 ejex = glm::vec3(modelMatrixMayow[0]);
+	/*glm::vec3 ejey = glm::normalize(terrain.getNormalTerrain(MatrixTieModel[3][0], MatrixTieModel[3][2]));
+	glm::vec3 ejex = glm::vec3(MatrixTieModel[0]);
 	glm::vec3 ejez = glm::normalize(glm::cross(ejex, ejey));
 	ejex = glm::normalize(glm::cross(ejey, ejez));
-	modelMatrixMayow[0] = glm::vec4(ejex, 0.0);
-	modelMatrixMayow[1] = glm::vec4(ejey, 0.0);
-	modelMatrixMayow[2] = glm::vec4(ejez, 0.0);
-	modelMatrixMayow[3][1] = -GRAVITY * tmv * tmv + 3.5 * tmv + terrain.getHeightTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2]);
+	MatrixTieModel[0] = glm::vec4(ejex, 0.0);
+	MatrixTieModel[1] = glm::vec4(ejey, 0.0);
+	MatrixTieModel[2] = glm::vec4(ejez, 0.0);
+	MatrixTieModel[3][1] = -GRAVITY * tmv * tmv + 3.5 * tmv + terrain.getHeightTerrain(MatrixTieModel[3][0], MatrixTieModel[3][2]);
 	tmv = currTime - startTimeJump;
-	if(modelMatrixMayow[3][1] < terrain.getHeightTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2])){
+	if(MatrixTieModel[3][1] < terrain.getHeightTerrain(MatrixTieModel[3][0], MatrixTieModel[3][2])){
 		isJump = false;
-		modelMatrixMayow[3][1] = terrain.getHeightTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2]);
+		MatrixTieModel[3][1] = terrain.getHeightTerrain(MatrixTieModel[3][0], MatrixTieModel[3][2]);
 	}*/
-	glm::mat4 modelMatrixMayowBody = glm::mat4(modelMatrixMayow);
-	modelMatrixMayowBody = glm::scale(modelMatrixMayowBody, glm::vec3(1.0f));
-	mayowModelAnimate.setAnimationIndex(animationMayowIndex);
-	mayowModelAnimate.render(modelMatrixMayowBody);
-	//animationMayowIndex = 1;
+	glm::mat4 MatrixTieModelBody = glm::mat4(MatrixTieModel);
+	MatrixTieModelBody = glm::scale(MatrixTieModelBody, glm::vec3(1.0f));
+	TieModel.setAnimationIndex(animTie);
+	TieModel.render(MatrixTieModelBody);
+	//animTie = 1;
 
 	/*******************************************
 	 * Skybox
@@ -1088,8 +1175,8 @@ void applicationLoop() {
 
 
 
-	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(13.0f, 10.0f, -5.0f));
-	modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));
+	MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(13.0f, 10.0f, -5.0f));
+	MatrixTieModel = glm::rotate(MatrixTieModel, glm::radians(-90.0f), glm::vec3(0, 1, 0));
 
 
 
@@ -1129,9 +1216,9 @@ void applicationLoop() {
 
 	
 		{
-			axis = glm::axis(glm::quat_cast(modelMatrixMayow));
-			angleTarget = glm::angle(glm::quat_cast(modelMatrixMayow));
-			target = modelMatrixMayow[3];
+			axis = glm::axis(glm::quat_cast(MatrixTieModel));
+			angleTarget = glm::angle(glm::quat_cast(MatrixTieModel));
+			target = MatrixTieModel[3];
 		}
 
 		if(std::isnan(angleTarget))
@@ -1359,21 +1446,21 @@ void applicationLoop() {
 			std::get<0>(collidersOBB.find("lamp2-" + std::to_string(i))->second) = lampCollider;
 		}
 
-		// Collider de mayow
-		AbstractModel::OBB mayowCollider;
-		glm::mat4 modelmatrixColliderMayow = glm::mat4(modelMatrixMayow);
-		modelmatrixColliderMayow = glm::rotate(modelmatrixColliderMayow,
+		// Collider de tie
+		AbstractModel::OBB tieCollider;
+		glm::mat4 modelmatrixColliderTie = glm::mat4(MatrixTieModel);
+		modelmatrixColliderTie = glm::rotate(modelmatrixColliderTie,
 				glm::radians(-90.0f), glm::vec3(1, 0, 0));
 		// Set the orientation of collider before doing the scale
-		mayowCollider.u = glm::quat_cast(modelmatrixColliderMayow);
-		modelmatrixColliderMayow = glm::scale(modelmatrixColliderMayow, glm::vec3(10.0f));
-		modelmatrixColliderMayow = glm::translate(modelmatrixColliderMayow,
-				glm::vec3(mayowModelAnimate.getObb().c.x,
-						mayowModelAnimate.getObb().c.y,
-						mayowModelAnimate.getObb().c.z));
-		mayowCollider.e = mayowModelAnimate.getObb().e * glm::vec3(1.0, 1.0, 1.0);
-		mayowCollider.c = glm::vec3(modelmatrixColliderMayow[3]);
-		addOrUpdateColliders(collidersOBB, "mayow", mayowCollider, modelMatrixMayow);
+		tieCollider.u = glm::quat_cast(modelmatrixColliderTie);
+		modelmatrixColliderTie = glm::scale(modelmatrixColliderTie, glm::vec3(10.0f));
+		modelmatrixColliderTie = glm::translate(modelmatrixColliderTie,
+				glm::vec3(TieModel.getObb().c.x,
+						TieModel.getObb().c.y,
+						TieModel.getObb().c.z));
+		tieCollider.e = TieModel.getObb().e * glm::vec3(1.0, 1.0, 1.0);
+		tieCollider.c = glm::vec3(modelmatrixColliderTie[3]);
+		addOrUpdateColliders(collidersOBB, "tie", tieCollider, MatrixTieModel);
 
 		/*******************************************
 		 * Render de colliders
@@ -1471,13 +1558,13 @@ void applicationLoop() {
 				if (!itCollision->second) 
 					addOrUpdateColliders(collidersOBB, itCollision->first);
 				else {
-					if (itCollision->first.compare("mayow") == 0)
-						modelMatrixMayow = std::get<1>(obbBuscado->second);
+					if (itCollision->first.compare("tie") == 0)
+						MatrixTieModel = std::get<1>(obbBuscado->second);
 				}
 			}
 		}
 
-		glm::mat4 modelMatrixRayMay = glm::mat4(modelMatrixMayow);
+		glm::mat4 modelMatrixRayMay = glm::mat4(MatrixTieModel);
 		modelMatrixRayMay = glm::translate(modelMatrixRayMay, glm::vec3(0, 1, 0));
 		float maxDistanceRay = 10.0;
 		glm::vec3 rayDirection = modelMatrixRayMay[2];
@@ -1509,13 +1596,13 @@ void applicationLoop() {
 		
 
 		// Listener for the Thris person camera
-		listenerPos[0] = modelMatrixMayow[3].x;
-		listenerPos[1] = modelMatrixMayow[3].y;
-		listenerPos[2] = modelMatrixMayow[3].z;
+		listenerPos[0] = MatrixTieModel[3].x;
+		listenerPos[1] = MatrixTieModel[3].y;
+		listenerPos[2] = MatrixTieModel[3].z;
 		alListenerfv(AL_POSITION, listenerPos);
 
-		glm::vec3 upModel = glm::normalize(modelMatrixMayow[1]);
-		glm::vec3 frontModel = glm::normalize(modelMatrixMayow[2]);
+		glm::vec3 upModel = glm::normalize(MatrixTieModel[1]);
+		glm::vec3 frontModel = glm::normalize(MatrixTieModel[2]);
 
 		listenerOri[0] = frontModel.x;
 		listenerOri[1] = frontModel.y;
