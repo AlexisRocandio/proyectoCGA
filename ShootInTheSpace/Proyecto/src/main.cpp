@@ -103,6 +103,11 @@ Model modelLamp2;
 Model modelLampPost2;
 // Mayow
 Model mayowModelAnimate;
+Model TieModel;
+Model T47Model;
+Model XWingModel;
+Model ArmaModel;
+Model SoldierModel;
 // Terrain model instance
 Terrain terrain(-1, -1, 200, 8, "../Textures/heightmap.png");
 
@@ -140,7 +145,14 @@ int lastMousePosY, offsetY = 0;
 
 // Model matrix definitions
 
-glm::mat4 modelMatrixMayow = glm::mat4(1.0f);
+
+
+glm::mat4 MatrixT47Model = glm::mat4(1.0f);
+glm::mat4 MatrixXWingModel = glm::mat4(1.0f);
+glm::mat4 MatrixTieModel = glm::mat4(1.0f);
+glm::mat4 MatrixArmaModel = glm::mat4(1.0f);
+glm::mat4 MatrixSoldierModel = glm::mat4(1.0f);
+
 
 
 int animationMayowIndex = 1;
@@ -342,16 +354,25 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	
 
 	//Lamps models
-	modelLamp1.loadModel("../models/Street-Lamp-Black/objLamp.obj");
-	modelLamp1.setShader(&shaderMulLighting);
-	modelLamp2.loadModel("../models/Street_Light/Lamp.obj");
-	modelLamp2.setShader(&shaderMulLighting);
-	modelLampPost2.loadModel("../models/Street_Light/LampPost.obj");
-	modelLampPost2.setShader(&shaderMulLighting);
+	
 
 	// Mayow
-	mayowModelAnimate.loadModel("../models/mayow/personaje2.fbx");
-	mayowModelAnimate.setShader(&shaderMulLighting);
+	
+
+	XWingModel.loadModel("../models/Xwing/XWing.fbx");
+	XWingModel.setShader(&shaderMulLighting);
+
+	TieModel.loadModel("../models/Tie/Tie.fbx");
+	TieModel.setShader(&shaderMulLighting);
+
+	T47Model.loadModel("../models/T47/T48.fbx");
+	T47Model.setShader(&shaderMulLighting);
+
+	ArmaModel.loadModel("../models/Arma/Arma.fbx");
+	ArmaModel.setShader(&shaderMulLighting);
+
+	SoldierModel.loadModel("../models/Soldier/Soldier.fbx");
+	SoldierModel.setShader(&shaderMulLighting);
 
 	// Terreno
 	terrain.init();
@@ -505,23 +526,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	textureHighway.freeImage();
 
 	// Definiendo la textura
-	Texture textureLandingPad("../Textures/landingPad.jpg");
-	textureLandingPad.loadImage(); // Cargar la textura
-	glGenTextures(1, &textureLandingPadID); // Creando el id de la textura del landingpad
-	glBindTexture(GL_TEXTURE_2D, textureLandingPadID); // Se enlaza la textura
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // Wrapping en el eje u
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // Wrapping en el eje v
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Filtering de minimización
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // Filtering de maximimizacion
-	if(textureLandingPad.getData()){
-		// Transferir los datos de la imagen a la tarjeta
-		glTexImage2D(GL_TEXTURE_2D, 0, textureLandingPad.getChannels() == 3 ? GL_RGB : GL_RGBA, textureLandingPad.getWidth(), textureLandingPad.getHeight(), 0,
-		textureLandingPad.getChannels() == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, textureLandingPad.getData());
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else 
-		std::cout << "Fallo la carga de textura" << std::endl;
-	textureLandingPad.freeImage(); // Liberamos memoria
+	
 
 	// Defininiendo texturas del mapa de mezclas
 	// Definiendo la textura
@@ -788,6 +793,11 @@ void destroy() {
 	modelLamp2.destroy();
 	modelLampPost2.destroy();
 	mayowModelAnimate.destroy();
+	XWingModel.destroy();
+	TieModel.destroy();
+	T47Model.destroy();
+	ArmaModel.destroy();
+	SoldierModel.destroy();
 
 	// Terrains objects Delete
 	terrain.destroy();
@@ -894,10 +904,10 @@ bool processInput(bool continueApplication) {
 		std::cout << "Right Trigger/R2: " << axes[5] << std::endl;
 
 		if(fabs(axes[1]) > 0.2){
-			modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, -axes[1] * 0.1));
+			MatrixSoldierModel = glm::translate(MatrixSoldierModel, glm::vec3(0, 0, -axes[1] * 0.1));
 			animationMayowIndex = 0;
 		}if(fabs(axes[0]) > 0.2){
-			modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-axes[0] * 0.5f), glm::vec3(0, 1, 0));
+			MatrixSoldierModel = glm::rotate(MatrixSoldierModel, glm::radians(-axes[0] * 0.5f), glm::vec3(0, 1, 0));
 			animationMayowIndex = 0;
 		}
 
@@ -944,18 +954,18 @@ bool processInput(bool continueApplication) {
 
 	// Controles de mayow
 	if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
-		modelMatrixMayow = glm::rotate(modelMatrixMayow, 0.02f, glm::vec3(0, 1, 0));
+		MatrixSoldierModel = glm::rotate(MatrixSoldierModel, 0.02f, glm::vec3(0, 1, 0));
 		animationMayowIndex = 0;
 	} else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
-		modelMatrixMayow = glm::rotate(modelMatrixMayow, -0.02f, glm::vec3(0, 1, 0));
+		MatrixSoldierModel = glm::rotate(MatrixSoldierModel, -0.02f, glm::vec3(0, 1, 0));
 		animationMayowIndex = 0;
 	}
 	if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
-		modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0, 0.0, 0.02));
+		MatrixSoldierModel = glm::translate(MatrixSoldierModel, glm::vec3(0.0, 0.0, 0.02));
 		animationMayowIndex = 0;
 	}
 	else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
-		modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0, 0.0, -0.02));
+		MatrixSoldierModel = glm::translate(MatrixSoldierModel, glm::vec3(0.0, 0.0, -0.02));
 		animationMayowIndex = 0;
 	}
 
@@ -980,6 +990,11 @@ void prepareScene(){
 
 	//Mayow
 	mayowModelAnimate.setShader(&shaderMulLighting);
+
+	ArmaModel.setShader(&shaderMulLighting);
+	TieModel.setShader(&shaderMulLighting);
+	XWingModel.setShader(&shaderMulLighting);
+	T47Model.setShader(&shaderMulLighting);
 }
 
 void prepareDepthScene(){
@@ -992,6 +1007,11 @@ void prepareDepthScene(){
 	modelLampPost2.setShader(&shaderDepth);
 	//Mayow
 	mayowModelAnimate.setShader(&shaderDepth);
+
+	ArmaModel.setShader(&shaderDepth);
+	TieModel.setShader(&shaderDepth);
+	XWingModel.setShader(&shaderDepth);
+	T47Model.setShader(&shaderDepth);
 }
 
 void renderSolidScene(){
@@ -1024,50 +1044,37 @@ void renderSolidScene(){
 	 * Custom objects obj
 	 *******************************************/
 	// Forze to enable the unit texture to 0 always ----------------- IMPORTANT
+
+	MatrixTieModel[3][1] = terrain.getHeightTerrain(MatrixTieModel[3][0], MatrixTieModel[3][2]);
+	TieModel.render(MatrixTieModel);
+
+	MatrixSoldierModel[3][1] = terrain.getHeightTerrain(MatrixSoldierModel[3][0], MatrixSoldierModel[3][2]);
+	SoldierModel.render(MatrixSoldierModel);
+
 	glActiveTexture(GL_TEXTURE0);
 
 	// Render for the eclipse car
 
 	// Render lamp
-	for(int i = 0; i < lamp1Position.size(); i++){
-		lamp1Position[i].y = terrain.getHeightTerrain(lamp1Position[i].x, lamp1Position[i].z);
-		modelLamp1.setPosition(lamp1Position[i]);
-		modelLamp1.setScale(glm::vec3(0.5));
-		modelLamp1.setOrientation(glm::vec3(0, lamp1Orientation[i], 0));
-		modelLamp1.render();
-	}
-	for(int i = 0; i < lamp2Position.size(); i++){
-		lamp2Position[i].y = terrain.getHeightTerrain(lamp2Position[i].x, lamp2Position[i].z);
-		modelLamp2.setPosition(lamp2Position[i]);
-		modelLamp2.setScale(glm::vec3(0.5));
-		modelLamp2.setOrientation(glm::vec3(0, lamp2Orientation[i], 0));
-		modelLamp2.render();
-		modelLampPost2.setPosition(lamp2Position[i]);
-		modelLampPost2.setScale(glm::vec3(0.5));
-		modelLampPost2.setOrientation(glm::vec3(0, lamp2Orientation[i], 0));
-		modelLampPost2.render();
-	}
+	
 	/*****************************************
 	 * Objetos animados por huesos
 	 * **************************************/
-	glm::vec3 ejey = glm::normalize(terrain.getNormalTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2]));
-	glm::vec3 ejex = glm::vec3(modelMatrixMayow[0]);
+
+	glm::vec3 ejey = glm::normalize(terrain.getNormalTerrain(MatrixSoldierModel[3][0], MatrixSoldierModel[3][2]));
+	glm::vec3 ejex = glm::vec3(MatrixSoldierModel[0]);
 	glm::vec3 ejez = glm::normalize(glm::cross(ejex, ejey));
 	ejex = glm::normalize(glm::cross(ejey, ejez));
-	modelMatrixMayow[0] = glm::vec4(ejex, 0.0);
-	modelMatrixMayow[1] = glm::vec4(ejey, 0.0);
-	modelMatrixMayow[2] = glm::vec4(ejez, 0.0);
-	modelMatrixMayow[3][1] = -GRAVITY * tmv * tmv + 3.5 * tmv + terrain.getHeightTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2]);
+	MatrixSoldierModel[0] = glm::vec4(ejex, 0.0);
+	MatrixSoldierModel[1] = glm::vec4(ejey, 0.0);
+	MatrixSoldierModel[2] = glm::vec4(ejez, 0.0);
+	MatrixSoldierModel[3][1] = -GRAVITY * tmv * tmv + 3.5 * tmv + terrain.getHeightTerrain(MatrixSoldierModel[3][0], MatrixSoldierModel[3][2]);
 	tmv = currTime - startTimeJump;
-	if(modelMatrixMayow[3][1] < terrain.getHeightTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2])){
+	if(MatrixSoldierModel[3][1] < terrain.getHeightTerrain(MatrixSoldierModel[3][0], MatrixSoldierModel[3][2])){
 		isJump = false;
-		modelMatrixMayow[3][1] = terrain.getHeightTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2]);
+		MatrixSoldierModel[3][1] = terrain.getHeightTerrain(MatrixSoldierModel[3][0], MatrixSoldierModel[3][2]);
 	}
-	glm::mat4 modelMatrixMayowBody = glm::mat4(modelMatrixMayow);
-	modelMatrixMayowBody = glm::scale(modelMatrixMayowBody, glm::vec3(0.021f));
-	mayowModelAnimate.setAnimationIndex(animationMayowIndex);
-	mayowModelAnimate.render(modelMatrixMayowBody);
-	//animationMayowIndex = 1;
+	glDisable(GL_CULL_FACE);
 
 	/*******************************************
 	 * Skybox
@@ -1139,8 +1146,16 @@ void applicationLoop() {
 
 
 
-	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(13.0f, 0.05f, -5.0f));
-	modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));
+	
+	MatrixSoldierModel = glm::translate(MatrixSoldierModel, glm::vec3(0, 0.0, 0.0));
+	MatrixSoldierModel = glm::scale(MatrixSoldierModel,glm::vec3(0.05));
+
+	MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(-3.0, 0.0, 2.0));
+
+	MatrixT47Model = glm::translate(MatrixT47Model, glm::vec3(3.0, 0.0, 2.0));
+	MatrixXWingModel = glm::translate(MatrixXWingModel, glm::vec3(10.0, 0.0, 2.0));
+
+
 
 
 
@@ -1180,9 +1195,9 @@ void applicationLoop() {
 
 	
 		{
-			axis = glm::axis(glm::quat_cast(modelMatrixMayow));
-			angleTarget = glm::angle(glm::quat_cast(modelMatrixMayow));
-			target = modelMatrixMayow[3];
+			axis = glm::axis(glm::quat_cast(MatrixSoldierModel));
+			angleTarget = glm::angle(glm::quat_cast(MatrixSoldierModel));
+			target = MatrixSoldierModel[3];
 		}
 
 		if(std::isnan(angleTarget))
@@ -1412,19 +1427,19 @@ void applicationLoop() {
 
 		// Collider de mayow
 		AbstractModel::OBB mayowCollider;
-		glm::mat4 modelmatrixColliderMayow = glm::mat4(modelMatrixMayow);
+		glm::mat4 modelmatrixColliderMayow = glm::mat4(MatrixSoldierModel);
 		modelmatrixColliderMayow = glm::rotate(modelmatrixColliderMayow,
 				glm::radians(-90.0f), glm::vec3(1, 0, 0));
 		// Set the orientation of collider before doing the scale
 		mayowCollider.u = glm::quat_cast(modelmatrixColliderMayow);
 		modelmatrixColliderMayow = glm::scale(modelmatrixColliderMayow, glm::vec3(0.021, 0.021, 0.021));
 		modelmatrixColliderMayow = glm::translate(modelmatrixColliderMayow,
-				glm::vec3(mayowModelAnimate.getObb().c.x,
-						mayowModelAnimate.getObb().c.y,
-						mayowModelAnimate.getObb().c.z));
-		mayowCollider.e = mayowModelAnimate.getObb().e * glm::vec3(0.021, 0.021, 0.021) * glm::vec3(0.787401574, 0.787401574, 0.787401574);
+				glm::vec3(SoldierModel.getObb().c.x,
+						SoldierModel.getObb().c.y,
+						SoldierModel.getObb().c.z));
+		mayowCollider.e = SoldierModel.getObb().e * glm::vec3(0.021, 0.021, 0.021) * glm::vec3(0.787401574, 0.787401574, 0.787401574);
 		mayowCollider.c = glm::vec3(modelmatrixColliderMayow[3]);
-		addOrUpdateColliders(collidersOBB, "mayow", mayowCollider, modelMatrixMayow);
+		addOrUpdateColliders(collidersOBB, "mayow", mayowCollider, MatrixSoldierModel);
 
 		/*******************************************
 		 * Render de colliders
@@ -1523,12 +1538,12 @@ void applicationLoop() {
 					addOrUpdateColliders(collidersOBB, itCollision->first);
 				else {
 					if (itCollision->first.compare("mayow") == 0)
-						modelMatrixMayow = std::get<1>(obbBuscado->second);
+						MatrixSoldierModel = std::get<1>(obbBuscado->second);
 				}
 			}
 		}
 
-		glm::mat4 modelMatrixRayMay = glm::mat4(modelMatrixMayow);
+		glm::mat4 modelMatrixRayMay = glm::mat4(MatrixSoldierModel);
 		modelMatrixRayMay = glm::translate(modelMatrixRayMay, glm::vec3(0, 1, 0));
 		float maxDistanceRay = 10.0;
 		glm::vec3 rayDirection = modelMatrixRayMay[2];
@@ -1560,13 +1575,13 @@ void applicationLoop() {
 		
 
 		// Listener for the Thris person camera
-		listenerPos[0] = modelMatrixMayow[3].x;
-		listenerPos[1] = modelMatrixMayow[3].y;
-		listenerPos[2] = modelMatrixMayow[3].z;
+		listenerPos[0] = MatrixSoldierModel[3].x;
+		listenerPos[1] = MatrixSoldierModel[3].y;
+		listenerPos[2] = MatrixSoldierModel[3].z;
 		alListenerfv(AL_POSITION, listenerPos);
 
-		glm::vec3 upModel = glm::normalize(modelMatrixMayow[1]);
-		glm::vec3 frontModel = glm::normalize(modelMatrixMayow[2]);
+		glm::vec3 upModel = glm::normalize(MatrixSoldierModel[1]);
+		glm::vec3 frontModel = glm::normalize(MatrixSoldierModel[2]);
 
 		listenerOri[0] = frontModel.x;
 		listenerOri[1] = frontModel.y;
