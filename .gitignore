@@ -1,17 +1,21 @@
-
+# Ignorar archivos específicos
 ShootInTheSpace/models/Lily/sin_nombre.blend1
 ShootInTheSpace/models/Lily/sin_nombre.blend
-/ShootInTheSpace/build
-/ShootInTheSpace/build/CGALib
-/ShootInTheSpace/build/.cmake
-/ShootInTheSpace/build/CGALib/CMakeFiles
-/ShootInTheSpace/build
-/ShootInTheSpace/build
 ShootInTheSpace/models/Soldier/Soldier.fbx
-/ShootInTheSpace/build/Proyecto/CMakeFiles
+
+# Ignorar todas las carpetas "build" y su contenido
+ShootInTheSpace/build/
+../ShootInTheSpace/build/
+
+# Ignorar carpetas específicas dentro de "build"
+../ShootInTheSpace/build/CGALib/
+../ShootInTheSpace/build/.cmake/
+../ShootInTheSpace/build/CGALib/CMakeFiles/
+../ShootInTheSpace/build/Proyecto/CMakeFiles/
+../ShootInTheSpace/build/.cmake/api/v1/reply/
+
+# Ignorar archivos JSON
 *.json
-/ShootInTheSpace/bin
-/ShootInTheSpace/build/Proyecto/CMakeFiles
-/ShootInTheSpace/bin
-/ShootInTheSpace/build/.cmake
-/ShootInTheSpace/build/.cmake/api/v1/reply
+
+# Ignorar la carpeta "bin"
+../ShootInTheSpace/bin/
