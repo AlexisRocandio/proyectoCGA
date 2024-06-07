@@ -1,4 +1,4 @@
-# Install script for directory: D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/CGALib
+# Install script for directory: C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/CGALib
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

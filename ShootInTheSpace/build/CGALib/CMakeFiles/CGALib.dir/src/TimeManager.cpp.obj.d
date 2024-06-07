@@ -1,6 +1,6 @@
 CGALib/CMakeFiles/CGALib.dir/src/TimeManager.cpp.obj: \
- D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\CGALib\src\TimeManager.cpp \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/CGALib/include/Headers/TimeManager.h \
+ C:\Users\Administrador\Desktop\proyectoCGA\ShootInTheSpace\CGALib\src\TimeManager.cpp \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/CGALib/include/Headers/TimeManager.h \
  C:/msys64/ucrt64/include/c++/13.2.0/chrono \
  C:/msys64/ucrt64/include/c++/13.2.0/bits/requires_hosted.h \
  C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/c++config.h \

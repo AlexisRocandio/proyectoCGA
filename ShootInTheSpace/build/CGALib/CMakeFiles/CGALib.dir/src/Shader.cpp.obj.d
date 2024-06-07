@@ -1,6 +1,6 @@
 CGALib/CMakeFiles/CGALib.dir/src/Shader.cpp.obj: \
- D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\CGALib\src\Shader.cpp \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/CGALib/include/Headers/Shader.h \
+ C:\Users\Administrador\Desktop\proyectoCGA\ShootInTheSpace\CGALib\src\Shader.cpp \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/CGALib/include/Headers/Shader.h \
  C:/msys64/ucrt64/include/c++/13.2.0/string \
  C:/msys64/ucrt64/include/c++/13.2.0/bits/requires_hosted.h \
  C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/c++config.h \
@@ -142,7 +142,7 @@ CGALib/CMakeFiles/CGALib.dir/src/Shader.cpp.obj: \
  C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/basic_file.h \
  C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/c++io.h \
  C:/msys64/ucrt64/include/c++/13.2.0/bits/fstream.tcc \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/external/glew/include/GL/glew.h \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/external/glew/include/GL/glew.h \
  C:/msys64/ucrt64/include/inttypes.h \
  C:/msys64/ucrt64/lib/gcc/x86_64-w64-mingw32/13.2.0/include/stdint.h \
  C:/msys64/ucrt64/include/stdint.h C:/msys64/ucrt64/include/GL/glu.h \

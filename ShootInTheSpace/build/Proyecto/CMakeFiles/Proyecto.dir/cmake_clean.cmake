@@ -1,9 +1,9 @@
 file(REMOVE_RECURSE
+  "../../bin/Proyecto.exe"
+  "../../bin/Proyecto.exe.manifest"
+  "../../bin/Proyecto.pdb"
   "CMakeFiles/Proyecto.dir/src/main.cpp.obj"
   "CMakeFiles/Proyecto.dir/src/main.cpp.obj.d"
-  "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/bin/Proyecto.exe"
-  "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/bin/Proyecto.exe.manifest"
-  "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/bin/Proyecto.pdb"
   "libProyecto.dll.a"
 )
 

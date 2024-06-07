@@ -1,7 +1,7 @@
 CGALib/CMakeFiles/CGALib.dir/src/FontTypeRendering.cpp.obj: \
- D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\CGALib\src\FontTypeRendering.cpp \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/CGALib/include/Headers/FontTypeRendering.h \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/external/glew/include/GL/glew.h \
+ C:\Users\Administrador\Desktop\proyectoCGA\ShootInTheSpace\CGALib\src\FontTypeRendering.cpp \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/CGALib/include/Headers/FontTypeRendering.h \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/external/glew/include/GL/glew.h \
  C:/msys64/ucrt64/include/inttypes.h C:/msys64/ucrt64/include/crtdefs.h \
  C:/msys64/ucrt64/include/corecrt.h C:/msys64/ucrt64/include/_mingw.h \
  C:/msys64/ucrt64/include/_mingw_mac.h \
@@ -141,24 +141,24 @@ CGALib/CMakeFiles/CGALib.dir/src/FontTypeRendering.cpp.obj: \
  C:/msys64/ucrt64/include/c++/13.2.0/bits/ostream.tcc \
  C:/msys64/ucrt64/include/c++/13.2.0/istream \
  C:/msys64/ucrt64/include/c++/13.2.0/bits/istream.tcc \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/external/Freetype/include/ft2build.h \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/config/ftheader.h \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/freetype.h \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/config/ftconfig.h \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/config/ftoption.h \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/config/ftstdlib.h \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/external/Freetype/include/ft2build.h \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/config/ftheader.h \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/freetype.h \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/config/ftconfig.h \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/config/ftoption.h \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/config/ftstdlib.h \
  C:/msys64/ucrt64/include/string.h \
  C:/msys64/ucrt64/include/sec_api/string_s.h \
  C:/msys64/ucrt64/include/setjmp.h \
  C:/msys64/ucrt64/lib/gcc/x86_64-w64-mingw32/13.2.0/include/stdarg.h \
  C:/msys64/ucrt64/include/stdarg.h \
  C:/msys64/ucrt64/include/_mingw_stdarg.h \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/config/integer-types.h \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/config/public-macros.h \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/config/mac-support.h \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/fttypes.h \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/ftsystem.h \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/ftimage.h \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/fterrors.h \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/ftmoderr.h \
- D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/fterrdef.h
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/config/integer-types.h \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/config/public-macros.h \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/config/mac-support.h \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/fttypes.h \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/ftsystem.h \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/ftimage.h \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/fterrors.h \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/ftmoderr.h \
+ C:/Users/Administrador/Desktop/proyectoCGA/ShootInTheSpace/external/Freetype/include/freetype/fterrdef.h

@@ -1,4 +1,7 @@
 file(REMOVE_RECURSE
+  "../../bin/libCGALib.dll"
+  "../../bin/libCGALib.dll.manifest"
+  "../../bin/libCGALib.pdb"
   "CMakeFiles/CGALib.dir/src/Bones.cpp.obj"
   "CMakeFiles/CGALib.dir/src/Bones.cpp.obj.d"
   "CMakeFiles/CGALib.dir/src/Box.cpp.obj"
@@ -27,9 +30,6 @@ file(REMOVE_RECURSE
   "CMakeFiles/CGALib.dir/src/ThirdPersonCamera.cpp.obj.d"
   "CMakeFiles/CGALib.dir/src/TimeManager.cpp.obj"
   "CMakeFiles/CGALib.dir/src/TimeManager.cpp.obj.d"
-  "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/bin/libCGALib.dll"
-  "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/bin/libCGALib.dll.manifest"
-  "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/bin/libCGALib.pdb"
   "libCGALib.dll.a"
 )
 
