@@ -29,9 +29,9 @@ set(CMAKE_MAKEFILE_DEPENDS
   "C:/Program Files/CMake/share/cmake-3.28/Modules/Platform/Windows-windres.cmake"
   "C:/Program Files/CMake/share/cmake-3.28/Modules/Platform/Windows.cmake"
   "C:/Program Files/CMake/share/cmake-3.28/Modules/Platform/WindowsPaths.cmake"
-  "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/13-Particulas/CMakeLists.txt"
   "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/CGALib/CMakeLists.txt"
   "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/CMakeLists.txt"
+  "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/Proyecto/CMakeLists.txt"
   "CMakeFiles/3.28.3/CMakeCCompiler.cmake"
   "CMakeFiles/3.28.3/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.28.3/CMakeRCCompiler.cmake"
@@ -48,11 +48,11 @@ set(CMAKE_MAKEFILE_OUTPUTS
 set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   "CGALib/CMakeFiles/CMakeDirectoryInformation.cmake"
-  "13-Particulas/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "Proyecto/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CGALib/CMakeFiles/CGALib.dir/DependInfo.cmake"
-  "13-Particulas/CMakeFiles/13-Particulas.dir/DependInfo.cmake"
+  "Proyecto/CMakeFiles/Proyecto.dir/DependInfo.cmake"
   )

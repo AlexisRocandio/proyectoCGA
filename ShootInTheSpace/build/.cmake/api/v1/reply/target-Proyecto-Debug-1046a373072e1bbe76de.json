@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/bin/13-Particulas.exe"
+			"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/bin/Proyecto.exe"
 		},
 		{
-			"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/bin/13-Particulas.pdb"
+			"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/bin/Proyecto.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -21,7 +21,7 @@
 		],
 		"files" : 
 		[
-			"13-Particulas/CMakeLists.txt"
+			"Proyecto/CMakeLists.txt"
 		],
 		"nodes" : 
 		[
@@ -80,7 +80,7 @@
 			[
 				{
 					"backtrace" : 5,
-					"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/13-Particulas/13-Particulas"
+					"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/Proyecto/Proyecto"
 				},
 				{
 					"backtrace" : 5,
@@ -92,35 +92,35 @@
 				},
 				{
 					"backtrace" : 5,
-					"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/13-Particulas/../external/assimp/include"
+					"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/Proyecto/../external/assimp/include"
 				},
 				{
 					"backtrace" : 5,
-					"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/13-Particulas/../external/glfw/include"
+					"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/Proyecto/../external/glfw/include"
 				},
 				{
 					"backtrace" : 5,
-					"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/13-Particulas/../external/glm"
+					"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/Proyecto/../external/glm"
 				},
 				{
 					"backtrace" : 5,
-					"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/13-Particulas/../external/glew/include"
+					"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/Proyecto/../external/glew/include"
 				},
 				{
 					"backtrace" : 5,
-					"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/13-Particulas/../external/FreeImage/include"
+					"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/Proyecto/../external/FreeImage/include"
 				},
 				{
 					"backtrace" : 5,
-					"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/13-Particulas/../external/OpenAL/include"
+					"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/Proyecto/../external/OpenAL/include"
 				},
 				{
 					"backtrace" : 5,
-					"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/13-Particulas/../external/Freetype/include"
+					"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/Proyecto/../external/Freetype/include"
 				},
 				{
 					"backtrace" : 5,
-					"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/13-Particulas/../external/freealut/include"
+					"path" : "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/Proyecto/../external/freealut/include"
 				}
 			],
 			"language" : "CXX",
@@ -137,7 +137,7 @@
 			"id" : "CGALib::@1a9f62cd0483ef4537e7"
 		}
 	],
-	"id" : "13-Particulas::@20129ce54fffe878b1a5",
+	"id" : "Proyecto::@b3d659ccca68cc8557a5",
 	"link" : 
 	{
 		"commandFragments" : 
@@ -152,37 +152,37 @@
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "-LD:\\PC\\Documents\\kiki\\UNAM\\GraficaAvanzada\\proyecto2\\proyectoCGA\\ShootInTheSpace\\13-Particulas\\..\\external\\assimp\\lib",
+				"fragment" : "-LD:\\PC\\Documents\\kiki\\UNAM\\GraficaAvanzada\\proyecto2\\proyectoCGA\\ShootInTheSpace\\Proyecto\\..\\external\\assimp\\lib",
 				"role" : "libraryPath"
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "-LD:\\PC\\Documents\\kiki\\UNAM\\GraficaAvanzada\\proyecto2\\proyectoCGA\\ShootInTheSpace\\13-Particulas\\..\\external\\glfw\\lib",
+				"fragment" : "-LD:\\PC\\Documents\\kiki\\UNAM\\GraficaAvanzada\\proyecto2\\proyectoCGA\\ShootInTheSpace\\Proyecto\\..\\external\\glfw\\lib",
 				"role" : "libraryPath"
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "-LD:\\PC\\Documents\\kiki\\UNAM\\GraficaAvanzada\\proyecto2\\proyectoCGA\\ShootInTheSpace\\13-Particulas\\..\\external\\Freetype\\lib",
+				"fragment" : "-LD:\\PC\\Documents\\kiki\\UNAM\\GraficaAvanzada\\proyecto2\\proyectoCGA\\ShootInTheSpace\\Proyecto\\..\\external\\Freetype\\lib",
 				"role" : "libraryPath"
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "-LD:\\PC\\Documents\\kiki\\UNAM\\GraficaAvanzada\\proyecto2\\proyectoCGA\\ShootInTheSpace\\13-Particulas\\..\\external\\FreeImage\\lib",
+				"fragment" : "-LD:\\PC\\Documents\\kiki\\UNAM\\GraficaAvanzada\\proyecto2\\proyectoCGA\\ShootInTheSpace\\Proyecto\\..\\external\\FreeImage\\lib",
 				"role" : "libraryPath"
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "-LD:\\PC\\Documents\\kiki\\UNAM\\GraficaAvanzada\\proyecto2\\proyectoCGA\\ShootInTheSpace\\13-Particulas\\..\\external\\glew\\lib",
+				"fragment" : "-LD:\\PC\\Documents\\kiki\\UNAM\\GraficaAvanzada\\proyecto2\\proyectoCGA\\ShootInTheSpace\\Proyecto\\..\\external\\glew\\lib",
 				"role" : "libraryPath"
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "-LD:\\PC\\Documents\\kiki\\UNAM\\GraficaAvanzada\\proyecto2\\proyectoCGA\\ShootInTheSpace\\13-Particulas\\..\\external\\freealut\\lib",
+				"fragment" : "-LD:\\PC\\Documents\\kiki\\UNAM\\GraficaAvanzada\\proyecto2\\proyectoCGA\\ShootInTheSpace\\Proyecto\\..\\external\\freealut\\lib",
 				"role" : "libraryPath"
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "-LD:\\PC\\Documents\\kiki\\UNAM\\GraficaAvanzada\\proyecto2\\proyectoCGA\\ShootInTheSpace\\13-Particulas\\..\\external\\OpenAL\\lib\\x64",
+				"fragment" : "-LD:\\PC\\Documents\\kiki\\UNAM\\GraficaAvanzada\\proyecto2\\proyectoCGA\\ShootInTheSpace\\Proyecto\\..\\external\\OpenAL\\lib\\x64",
 				"role" : "libraryPath"
 			},
 			{
@@ -257,12 +257,12 @@
 		],
 		"language" : "CXX"
 	},
-	"name" : "13-Particulas",
-	"nameOnDisk" : "13-Particulas.exe",
+	"name" : "Proyecto",
+	"nameOnDisk" : "Proyecto.exe",
 	"paths" : 
 	{
-		"build" : "13-Particulas",
-		"source" : "13-Particulas"
+		"build" : "Proyecto",
+		"source" : "Proyecto"
 	},
 	"sourceGroups" : 
 	[
@@ -279,7 +279,7 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "13-Particulas/src/main.cpp",
+			"path" : "Proyecto/src/main.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],

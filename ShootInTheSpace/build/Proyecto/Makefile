@@ -86,14 +86,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\build\CMakeFiles D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\build\\CMakeFiles\progress.marks
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 all
+	cd /d D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\build && $(CMAKE_COMMAND) -E cmake_progress_start D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\build\CMakeFiles D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\build\Proyecto\\CMakeFiles\progress.marks
+	cd /d D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\build && $(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Proyecto/all
 	$(CMAKE_COMMAND) -E cmake_progress_start D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\build\CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 clean
+	cd /d D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\build && $(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Proyecto/clean
 .PHONY : clean
 
 # The main clean target
@@ -102,44 +102,56 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 preinstall
+	cd /d D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\build && $(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Proyecto/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 preinstall
+	cd /d D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\build && $(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Proyecto/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles\Makefile.cmake 1
+	cd /d D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles\Makefile.cmake 1
 .PHONY : depend
 
-#=============================================================================
-# Target rules for targets named CGALib
+# Convenience name for target.
+Proyecto/CMakeFiles/Proyecto.dir/rule:
+	cd /d D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\build && $(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Proyecto/CMakeFiles/Proyecto.dir/rule
+.PHONY : Proyecto/CMakeFiles/Proyecto.dir/rule
 
-# Build rule for target.
-CGALib: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CGALib
-.PHONY : CGALib
-
-# fast build rule for target.
-CGALib/fast:
-	$(MAKE) $(MAKESILENT) -f CGALib\CMakeFiles\CGALib.dir\build.make CGALib/CMakeFiles/CGALib.dir/build
-.PHONY : CGALib/fast
-
-#=============================================================================
-# Target rules for targets named Proyecto
-
-# Build rule for target.
-Proyecto: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Proyecto
+# Convenience name for target.
+Proyecto: Proyecto/CMakeFiles/Proyecto.dir/rule
 .PHONY : Proyecto
 
 # fast build rule for target.
 Proyecto/fast:
-	$(MAKE) $(MAKESILENT) -f Proyecto\CMakeFiles\Proyecto.dir\build.make Proyecto/CMakeFiles/Proyecto.dir/build
+	cd /d D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\build && $(MAKE) $(MAKESILENT) -f Proyecto\CMakeFiles\Proyecto.dir\build.make Proyecto/CMakeFiles/Proyecto.dir/build
 .PHONY : Proyecto/fast
+
+src/main.obj: src/main.cpp.obj
+.PHONY : src/main.obj
+
+# target to build an object file
+src/main.cpp.obj:
+	cd /d D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\build && $(MAKE) $(MAKESILENT) -f Proyecto\CMakeFiles\Proyecto.dir\build.make Proyecto/CMakeFiles/Proyecto.dir/src/main.cpp.obj
+.PHONY : src/main.cpp.obj
+
+src/main.i: src/main.cpp.i
+.PHONY : src/main.i
+
+# target to preprocess a source file
+src/main.cpp.i:
+	cd /d D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\build && $(MAKE) $(MAKESILENT) -f Proyecto\CMakeFiles\Proyecto.dir\build.make Proyecto/CMakeFiles/Proyecto.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
+
+src/main.s: src/main.cpp.s
+.PHONY : src/main.s
+
+# target to generate assembly for a file
+src/main.cpp.s:
+	cd /d D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\build && $(MAKE) $(MAKESILENT) -f Proyecto\CMakeFiles\Proyecto.dir\build.make Proyecto/CMakeFiles/Proyecto.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
 
 # Help Target
 help:
@@ -149,8 +161,10 @@ help:
 	@echo ... depend
 	@echo ... edit_cache
 	@echo ... rebuild_cache
-	@echo ... CGALib
 	@echo ... Proyecto
+	@echo ... src/main.obj
+	@echo ... src/main.i
+	@echo ... src/main.s
 .PHONY : help
 
 
@@ -162,6 +176,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles\Makefile.cmake 0
+	cd /d D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles\Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

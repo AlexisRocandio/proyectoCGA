@@ -84,9 +84,9 @@
   "output": "CGALib/CMakeFiles/CGALib.dir/src/TimeManager.cpp.obj"
 },
 {
-  "directory": "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/build/13-Particulas",
-  "command": "c:\\msys64\\ucrt64\\bin\\g++.exe -DBUILDING_DLL @CMakeFiles/13-Particulas.dir/includes_CXX.rsp -g -o CMakeFiles\\13-Particulas.dir\\src\\main.cpp.obj -c D:\\PC\\Documents\\kiki\\UNAM\\GraficaAvanzada\\proyecto2\\proyectoCGA\\ShootInTheSpace\\13-Particulas\\src\\main.cpp",
-  "file": "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/13-Particulas/src/main.cpp",
-  "output": "13-Particulas/CMakeFiles/13-Particulas.dir/src/main.cpp.obj"
+  "directory": "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/build/Proyecto",
+  "command": "c:\\msys64\\ucrt64\\bin\\g++.exe -DBUILDING_DLL @CMakeFiles/Proyecto.dir/includes_CXX.rsp -g -o CMakeFiles\\Proyecto.dir\\src\\main.cpp.obj -c D:\\PC\\Documents\\kiki\\UNAM\\GraficaAvanzada\\proyecto2\\proyectoCGA\\ShootInTheSpace\\Proyecto\\src\\main.cpp",
+  "file": "D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/Proyecto/src/main.cpp",
+  "output": "Proyecto/CMakeFiles/Proyecto.dir/src/main.cpp.obj"
 }
 ]

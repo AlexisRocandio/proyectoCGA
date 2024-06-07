@@ -154,7 +154,7 @@
 			"path" : "CGALib/CMakeLists.txt"
 		},
 		{
-			"path" : "13-Particulas/CMakeLists.txt"
+			"path" : "Proyecto/CMakeLists.txt"
 		}
 	],
 	"kind" : "cmakeFiles",
