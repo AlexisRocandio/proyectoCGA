@@ -47,9 +47,6 @@
 
 // ShadowBox include
 #include "Headers/ShadowBox.h"
-//posición de camara
-#include "Headers/FirstPersonCamera.h"
-
 
 // OpenAL include
 #include <AL/alut.h>
@@ -77,11 +74,9 @@ Shader shaderDepth;
 // Shader para visualizar el buffer de profundidad
 Shader shaderViewDepth;
 //Shader para las particulas de fountain
-/*Shader shaderParticlesFountain;*/
+Shader shaderParticlesFountain;
 
 std::shared_ptr<Camera> camera(new ThirdPersonCamera());
-//std::shared_ptr<Camera> camera(new FirstPersonCamera());
-
 float distanceFromTarget = 7.0;
 
 Sphere skyboxSphere(20, 20);
@@ -95,19 +90,54 @@ Sphere sphereCollider(10, 10);
 Cylinder rayModel(10, 10, 1.0, 1.0, 1.0);
 Box boxIntro;
 Box boxViewDepth;
+// Models complex instances
+Model modelRock;
+Model modelAircraft;
+Model modelEclipseChasis;
+Model modelEclipseRearWheels;
+Model modelEclipseFrontalWheels;
+Model modelHeliChasis;
+Model modelHeliHeli;
+Model modelHeliHeliBack;
+Model modelLambo;
+Model modelLamboLeftDor;
+Model modelLamboRightDor;
+Model modelLamboFrontLeftWheel;
+Model modelLamboFrontRightWheel;
+Model modelLamboRearLeftWheel;
+Model modelLamboRearRightWheel;
+// Dart lego
+Model modelDartLegoBody;
+Model modelDartLegoHead;
+Model modelDartLegoMask;
+Model modelDartLegoLeftArm;
+Model modelDartLegoRightArm;
+Model modelDartLegoLeftHand;
+Model modelDartLegoRightHand;
+Model modelDartLegoLeftLeg;
+Model modelDartLegoRightLeg;
 
-// Modelos animados
+// Buzz
+Model modelBuzzTorso;
+Model modelBuzzHead;
+Model modelBuzzLeftArm;
+Model modelBuzzLeftForeArm;
+Model modelBuzzLeftHand;
 // Lamps
 Model modelLamp1;
 Model modelLamp2;
 Model modelLampPost2;
+// Modelos animados
 // Mayow
 Model mayowModelAnimate;
-Model TieModel;
-Model T47Model;
-Model XWingModel;
-Model ArmaModel;
-Model SoldierModel;
+// Cowboy
+Model cowboyModelAnimate;
+// Guardian con lampara
+Model guardianModelAnimate;
+// Cybog
+Model cyborgModelAnimate;
+// Fountain
+Model modelFountain;
 // Terrain model instance
 Terrain terrain(-1, -1, 200, 8, "../Textures/heightmap.png");
 
@@ -123,7 +153,7 @@ bool iniciaPartida = false, presionarOpcion = false;
 
 // Modelo para el render del texto
 FontTypeRendering::FontTypeRendering *modelText;
-
+/*EMPIEZAN LAS DEFINICIONES DE LOS ARCHIVOS DE TEXTURA DEL SKY BOX*/
 GLenum types[6] = {
 GL_TEXTURE_CUBE_MAP_POSITIVE_X,
 GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
@@ -144,16 +174,18 @@ int lastMousePosX, offsetX = 0;
 int lastMousePosY, offsetY = 0;
 
 // Model matrix definitions
-
-
-
-glm::mat4 MatrixT47Model = glm::mat4(1.0f);
-glm::mat4 MatrixXWingModel = glm::mat4(1.0f);
-glm::mat4 MatrixTieModel = glm::mat4(1.0f);
-glm::mat4 MatrixArmaModel = glm::mat4(1.0f);
-glm::mat4 MatrixSoldierModel = glm::mat4(1.0f);
-
-
+glm::mat4 modelMatrixEclipse = glm::mat4(1.0f);
+glm::mat4 matrixModelRock = glm::mat4(1.0);
+glm::mat4 modelMatrixHeli = glm::mat4(1.0f);
+glm::mat4 modelMatrixLambo = glm::mat4(1.0);
+glm::mat4 modelMatrixAircraft = glm::mat4(1.0);
+glm::mat4 modelMatrixDart = glm::mat4(1.0f);
+glm::mat4 modelMatrixBuzz = glm::mat4(1.0f);
+glm::mat4 modelMatrixMayow = glm::mat4(1.0f);
+glm::mat4 modelMatrixCowboy = glm::mat4(1.0f);
+glm::mat4 modelMatrixGuardian = glm::mat4(1.0f);
+glm::mat4 modelMatrixCyborg = glm::mat4(1.0f);
+glm::mat4 modelMatrixFountain = glm::mat4(1.0f);
 
 int animationMayowIndex = 1;
 float rotDartHead = 0.0, rotDartLeftArm = 0.0, rotDartLeftHand = 0.0, rotDartRightArm = 0.0, rotDartRightHand = 0.0, rotDartLeftLeg = 0.0, rotDartRightLeg = 0.0;
@@ -166,6 +198,42 @@ bool saveFrame = false, availableSave = true;
 std::ofstream myfile;
 std::string fileName = "";
 bool record = false;
+
+// Joints interpolations Dart Lego
+std::vector<std::vector<float>> keyFramesDartJoints;
+std::vector<std::vector<glm::mat4>> keyFramesDart;
+int indexFrameDartJoints = 0;
+int indexFrameDartJointsNext = 1;
+float interpolationDartJoints = 0.0;
+int maxNumPasosDartJoints = 20;
+int numPasosDartJoints = 0;
+int indexFrameDart = 0;
+int indexFrameDartNext = 1;
+float interpolationDart = 0.0;
+int maxNumPasosDart = 200;
+int numPasosDart = 0;
+
+// Joints interpolations Buzz
+std::vector<std::vector<float>> keyFramesBuzzJoints;
+std::vector<std::vector<glm::mat4>> keyFramesBuzz;
+int indexFrameBuzzJoints = 0;
+int indexFrameBuzzJointsNext = 1;
+float interpolationBuzzJoints = 0.0;
+int maxNumPasosBuzzJoints = 20;
+int numPasosBuzzJoints = 0;
+int indexFrameBuzz = 0;
+int indexFrameBuzzNext = 1;
+float interpolationBuzz = 0.0;
+int maxNumPasosBuzz = 100;
+int numPasosBuzz = 0;
+
+// Var animate helicopter
+float rotHelHelY = 0.0;
+float rotHelHelBack = 0.0;
+
+// Var animate lambo dor
+int stateDoor = 0;
+float dorRotCount = 0.0;
 
 // Lamps position
 std::vector<glm::vec3> lamp1Position = {
@@ -182,6 +250,13 @@ std::vector<glm::vec3> lamp2Position = {
 };
 std::vector<float> lamp2Orientation = {
 	21.37 + 90, -65.0 + 90
+};
+
+// Blending model unsorted
+std::map<std::string, glm::vec3> blendingUnsorted = {
+		{"aircraft", glm::vec3(10.0, 0.0, -17.5)},
+		{"lambo", glm::vec3(23.0, 0.0, 0.0)},
+		{"heli", glm::vec3(5.0, 10.0, -5.0)}
 };
 
 double deltaTime;
@@ -351,28 +426,102 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	boxViewDepth.init();
 	boxViewDepth.setShader(&shaderViewDepth);
 
+	modelRock.loadModel("../models/rock/rock.obj");
+	modelRock.setShader(&shaderMulLighting);
+
+	modelAircraft.loadModel("../models/Aircraft_obj/E 45 Aircraft_obj.obj");
+	modelAircraft.setShader(&shaderMulLighting);
+
+	// Eclipse
+	modelEclipseChasis.loadModel("../models/Eclipse/2003eclipse_chasis.obj");
+	modelEclipseChasis.setShader(&shaderMulLighting);
+	modelEclipseFrontalWheels.loadModel("../models/Eclipse/2003eclipse_frontal_wheels.obj");
+	modelEclipseFrontalWheels.setShader(&shaderMulLighting);
+	modelEclipseRearWheels.loadModel("../models/Eclipse/2003eclipse_rear_wheels.obj");
+	modelEclipseRearWheels.setShader(&shaderMulLighting);
+	// Helicopter
+	modelHeliChasis.loadModel("../models/Helicopter/Mi_24_chasis.obj");
+	modelHeliChasis.setShader(&shaderMulLighting);
+	modelHeliHeli.loadModel("../models/Helicopter/Mi_24_heli.obj");
+	modelHeliHeli.setShader(&shaderMulLighting);
+	modelHeliHeliBack.loadModel("../models/Helicopter/Mi_24_heli_back.obj");
+	modelHeliHeliBack.setShader(&shaderMulLighting);
+	// Lamborginhi
+	modelLambo.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_chasis.obj");
+	modelLambo.setShader(&shaderMulLighting);
+	modelLamboLeftDor.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_left_dor.obj");
+	modelLamboLeftDor.setShader(&shaderMulLighting);
+	modelLamboRightDor.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_right_dor.obj");
+	modelLamboRightDor.setShader(&shaderMulLighting);
+	modelLamboFrontLeftWheel.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_front_left_wheel.obj");
+	modelLamboFrontLeftWheel.setShader(&shaderMulLighting);
+	modelLamboFrontRightWheel.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_front_right_wheel.obj");
+	modelLamboFrontRightWheel.setShader(&shaderMulLighting);
+	modelLamboRearLeftWheel.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_rear_left_wheel.obj");
+	modelLamboRearLeftWheel.setShader(&shaderMulLighting);
+	modelLamboRearRightWheel.loadModel("../models/Lamborginhi_Aventador_OBJ/Lamborghini_Aventador_rear_right_wheel.obj");
+	modelLamboRearRightWheel.setShader(&shaderMulLighting);
+
+	// Dart Lego
+	modelDartLegoBody.loadModel("../models/LegoDart/LeoDart_body.obj");
+	modelDartLegoBody.setShader(&shaderMulLighting);
+	modelDartLegoMask.loadModel("../models/LegoDart/LeoDart_mask.obj");
+	modelDartLegoMask.setShader(&shaderMulLighting);
+	modelDartLegoHead.loadModel("../models/LegoDart/LeoDart_head.obj");
+	modelDartLegoHead.setShader(&shaderMulLighting);
+	modelDartLegoLeftArm.loadModel("../models/LegoDart/LeoDart_left_arm.obj");
+	modelDartLegoLeftArm.setShader(&shaderMulLighting);
+	modelDartLegoRightArm.loadModel("../models/LegoDart/LeoDart_right_arm.obj");
+	modelDartLegoRightArm.setShader(&shaderMulLighting);
+	modelDartLegoLeftHand.loadModel("../models/LegoDart/LeoDart_left_hand.obj");
+	modelDartLegoLeftHand.setShader(&shaderMulLighting);
+	modelDartLegoRightHand.loadModel("../models/LegoDart/LeoDart_right_hand.obj");
+	modelDartLegoRightHand.setShader(&shaderMulLighting);
+	modelDartLegoLeftLeg.loadModel("../models/LegoDart/LeoDart_left_leg.obj");
+	modelDartLegoLeftLeg.setShader(&shaderMulLighting);
+	modelDartLegoRightLeg.loadModel("../models/LegoDart/LeoDart_right_leg.obj");
+	modelDartLegoRightLeg.setShader(&shaderMulLighting);
+
 	
+	// Buzz
+	modelBuzzTorso.loadModel("../models/buzz/buzzlightyTorso.obj");
+	modelBuzzTorso.setShader(&shaderMulLighting);
+	modelBuzzHead.loadModel("../models/buzz/buzzlightyHead.obj");
+	modelBuzzHead.setShader(&shaderMulLighting);
+	modelBuzzLeftArm.loadModel("../models/buzz/buzzlightyLeftArm.obj");
+	modelBuzzLeftArm.setShader(&shaderMulLighting);
+	modelBuzzLeftForeArm.loadModel("../models/buzz/buzzlightyLeftForearm.obj");
+	modelBuzzLeftForeArm.setShader(&shaderMulLighting);
+	modelBuzzLeftHand.loadModel("../models/buzz/buzzlightyLeftHand.obj");
+	modelBuzzLeftHand.setShader(&shaderMulLighting);
 
 	//Lamps models
-	
+	modelLamp1.loadModel("../models/Street-Lamp-Black/objLamp.obj");
+	modelLamp1.setShader(&shaderMulLighting);
+	modelLamp2.loadModel("../models/Street_Light/Lamp.obj");
+	modelLamp2.setShader(&shaderMulLighting);
+	modelLampPost2.loadModel("../models/Street_Light/LampPost.obj");
+	modelLampPost2.setShader(&shaderMulLighting);
 
 	// Mayow
+	mayowModelAnimate.loadModel("../models/Tie/Tie.fbx");
+	mayowModelAnimate.setShader(&shaderMulLighting);
 	
+	// Cowboy
+	cowboyModelAnimate.loadModel("../models/cowboy/Character Running.fbx");
+	cowboyModelAnimate.setShader(&shaderMulLighting);
 
-	XWingModel.loadModel("../models/Xwing/XWing.fbx");
-	XWingModel.setShader(&shaderMulLighting);
+	// Guardian
+	guardianModelAnimate.loadModel("../models/boblampclean/boblampclean.md5mesh");
+	guardianModelAnimate.setShader(&shaderMulLighting);
 
-	TieModel.loadModel("../models/Tie/Tie.fbx");
-	TieModel.setShader(&shaderMulLighting);
+	// Cyborg
+	cyborgModelAnimate.loadModel("../models/cyborg/cyborg.fbx");
+	cyborgModelAnimate.setShader(&shaderMulLighting);
 
-	T47Model.loadModel("../models/T47/T48.fbx");
-	T47Model.setShader(&shaderMulLighting);
-
-	ArmaModel.loadModel("../models/Arma/Arma.fbx");
-	ArmaModel.setShader(&shaderMulLighting);
-
-	SoldierModel.loadModel("../models/Soldier/Soldier.fbx");
-	SoldierModel.setShader(&shaderMulLighting);
+	//Fountain
+	modelFountain.loadModel("../models/fountain/fountain.obj");
+	modelFountain.setShader(&shaderMulLighting);
 
 	// Terreno
 	terrain.init();
@@ -382,7 +531,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelText = new FontTypeRendering::FontTypeRendering(screenWidth, screenHeight);
 	modelText->Initialize();
 
-	camera->setPosition(glm::vec3(0.0f, 1.75f, 0.0f));
+	camera->setPosition(glm::vec3(0.0, 3.0, 4.0));
 	camera->setDistanceFromTarget(distanceFromTarget);
 	camera->setSensitivity(1.0);
 	
@@ -526,7 +675,23 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	textureHighway.freeImage();
 
 	// Definiendo la textura
-	
+	Texture textureLandingPad("../Textures/landingPad.jpg");
+	textureLandingPad.loadImage(); // Cargar la textura
+	glGenTextures(1, &textureLandingPadID); // Creando el id de la textura del landingpad
+	glBindTexture(GL_TEXTURE_2D, textureLandingPadID); // Se enlaza la textura
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // Wrapping en el eje u
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // Wrapping en el eje v
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Filtering de minimización
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // Filtering de maximimizacion
+	if(textureLandingPad.getData()){
+		// Transferir los datos de la imagen a la tarjeta
+		glTexImage2D(GL_TEXTURE_2D, 0, textureLandingPad.getChannels() == 3 ? GL_RGB : GL_RGBA, textureLandingPad.getWidth(), textureLandingPad.getHeight(), 0,
+		textureLandingPad.getChannels() == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, textureLandingPad.getData());
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else 
+		std::cout << "Fallo la carga de textura" << std::endl;
+	textureLandingPad.freeImage(); // Liberamos memoria
 
 	// Defininiendo texturas del mapa de mezclas
 	// Definiendo la textura
@@ -782,6 +947,7 @@ void destroy() {
 	boxWalls.destroy();
 	boxHighway.destroy();
 	boxLandingPad.destroy();
+	esfera1.destroy();
 	boxCollider.destroy();
 	sphereCollider.destroy();
 	rayModel.destroy();
@@ -789,15 +955,43 @@ void destroy() {
 	boxViewDepth.destroy();
 
 	// Custom objects Delete
+	modelAircraft.destroy();
+	modelDartLegoBody.destroy();
+	modelDartLegoHead.destroy();
+	modelDartLegoLeftArm.destroy();
+	modelDartLegoLeftHand.destroy();
+	modelDartLegoLeftLeg.destroy();
+	modelDartLegoMask.destroy();
+	modelDartLegoRightArm.destroy();
+	modelDartLegoRightHand.destroy();
+	modelDartLegoRightLeg.destroy();
+	modelEclipseChasis.destroy();
+	modelEclipseFrontalWheels.destroy();
+	modelEclipseRearWheels.destroy();
+	modelHeliChasis.destroy();
+	modelHeliHeli.destroy();
+	modelHeliHeliBack.destroy();
+	modelLambo.destroy();
+	modelLamboFrontLeftWheel.destroy();
+	modelLamboFrontRightWheel.destroy();
+	modelLamboLeftDor.destroy();
+	modelLamboRearLeftWheel.destroy();
+	modelLamboRearRightWheel.destroy();
+	modelLamboRightDor.destroy();
+	modelRock.destroy();
+	modelBuzzHead.destroy();
+	modelBuzzLeftArm.destroy();
+	modelBuzzLeftForeArm.destroy();
+	modelBuzzLeftHand.destroy();
+	modelBuzzTorso.destroy();
 	modelLamp1.destroy();
 	modelLamp2.destroy();
 	modelLampPost2.destroy();
 	mayowModelAnimate.destroy();
-	XWingModel.destroy();
-	TieModel.destroy();
-	T47Model.destroy();
-	ArmaModel.destroy();
-	SoldierModel.destroy();
+	cowboyModelAnimate.destroy();
+	guardianModelAnimate.destroy();
+	cyborgModelAnimate.destroy();
+	modelFountain.destroy();
 
 	// Terrains objects Delete
 	terrain.destroy();
@@ -904,10 +1098,10 @@ bool processInput(bool continueApplication) {
 		std::cout << "Right Trigger/R2: " << axes[5] << std::endl;
 
 		if(fabs(axes[1]) > 0.2){
-			MatrixSoldierModel = glm::translate(MatrixSoldierModel, glm::vec3(0, 0, -axes[1] * 0.1));
+			modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0, 0, -axes[1] * 0.1));
 			animationMayowIndex = 0;
 		}if(fabs(axes[0]) > 0.2){
-			MatrixSoldierModel = glm::rotate(MatrixSoldierModel, glm::radians(-axes[0] * 0.5f), glm::vec3(0, 1, 0));
+			modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-axes[0] * 0.5f), glm::vec3(0, 1, 0));
 			animationMayowIndex = 0;
 		}
 
@@ -937,6 +1131,25 @@ bool processInput(bool continueApplication) {
 	offsetX = 0;
 	offsetY = 0;
 
+	// Seleccionar modelo
+	if (enableCountSelected && glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS){
+		enableCountSelected = false;
+		modelSelected++;
+		if(modelSelected > 4)
+			modelSelected = 0;
+		if(modelSelected == 1)
+			fileName = "../animaciones/animation_dart_joints.txt";
+		if (modelSelected == 2)
+			fileName = "../animaciones/animation_dart.txt";
+		if(modelSelected == 3)
+			fileName = "../animaciones/animation_buzz_joints.txt";
+		if (modelSelected == 4)
+			fileName = "../animaciones/animation_buzz.txt";
+		std::cout << "modelSelected:" << modelSelected << std::endl;
+	}
+	else if(glfwGetKey(window, GLFW_KEY_TAB) == GLFW_RELEASE)
+		enableCountSelected = true;
+
 	// Guardar key frames
 	if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS
 			&& glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS){
@@ -945,27 +1158,125 @@ bool processInput(bool continueApplication) {
 			myfile.close();
 		myfile.open(fileName);
 	}
+	if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE
+			&& glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS){
+		record = false;
+		myfile.close();
+		if(modelSelected == 1)
+			keyFramesDartJoints = getKeyRotFrames(fileName);
+		if (modelSelected == 2)
+			keyFramesDart = getKeyFrames(fileName);
+		if(modelSelected == 3)
+			keyFramesBuzzJoints = getKeyRotFrames(fileName);
+		if (modelSelected == 4)
+			keyFramesBuzz = getKeyFrames(fileName);
+	}
 	if(availableSave && glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS){
 		saveFrame = true;
 		availableSave = false;
 	}if(glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_RELEASE)
 		availableSave = true;
 
+	// Dart Lego model movements
+	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+			glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+		rotDartHead += 0.02;
+	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+			glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+		rotDartHead -= 0.02;
+	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+			glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+		rotDartLeftArm += 0.02;
+	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+			glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+		rotDartLeftArm -= 0.02;
+	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+			glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+		rotDartRightArm += 0.02;
+	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+			glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+		rotDartRightArm -= 0.02;
+	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+			glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+		rotDartLeftHand += 0.02;
+	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+			glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+		rotDartLeftHand -= 0.02;
+	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+			glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
+		rotDartRightHand += 0.02;
+	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+			glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
+		rotDartRightHand -= 0.02;
+	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+			glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
+		rotDartLeftLeg += 0.02;
+	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+			glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
+		rotDartLeftLeg -= 0.02;
+	if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+			glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS)
+		rotDartRightLeg += 0.02;
+	else if (modelSelected == 1 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+			glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS)
+		rotDartRightLeg -= 0.02;
+	if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+		modelMatrixDart = glm::rotate(modelMatrixDart, 0.02f, glm::vec3(0, 1, 0));
+	else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+		modelMatrixDart = glm::rotate(modelMatrixDart, -0.02f, glm::vec3(0, 1, 0));
+	if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		modelMatrixDart = glm::translate(modelMatrixDart, glm::vec3(-0.02, 0.0, 0.0));
+	else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		modelMatrixDart = glm::translate(modelMatrixDart, glm::vec3(0.02, 0.0, 0.0));
+	
+	// Movimientos de buzz
+	if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+			glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+		rotBuzzHead += 0.02;
+	else if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+			glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+		rotBuzzHead -= 0.02;
+	if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+			glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+		rotBuzzLeftarm += 0.02;
+	else if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+			glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+		rotBuzzLeftarm -= 0.02;
+	if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+			glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+		rotBuzzLeftForeArm += 0.02;
+	else if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+			glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+		rotBuzzLeftForeArm -= 0.02;
+	if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE &&
+			glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+		rotBuzzLeftHand += 0.02;
+	else if (modelSelected == 3 && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS &&
+			glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+		rotBuzzLeftHand -= 0.02;
+	if (modelSelected == 4 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+		modelMatrixBuzz = glm::rotate(modelMatrixBuzz, 0.02f, glm::vec3(0, 1, 0));
+	else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+		modelMatrixBuzz = glm::rotate(modelMatrixBuzz, -0.02f, glm::vec3(0, 1, 0));
+	if (modelSelected == 4 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		modelMatrixBuzz = glm::translate(modelMatrixBuzz, glm::vec3(0.0, 0.0, 0.02));
+	else if (modelSelected == 2 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		modelMatrixBuzz = glm::translate(modelMatrixBuzz, glm::vec3(0.0, 0.0, -0.02));
 
 	// Controles de mayow
 	if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
-		MatrixSoldierModel = glm::rotate(MatrixSoldierModel, 0.02f, glm::vec3(0, 1, 0));
+		modelMatrixMayow = glm::rotate(modelMatrixMayow, 0.02f, glm::vec3(0, 1, 0));
 		animationMayowIndex = 0;
 	} else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
-		MatrixSoldierModel = glm::rotate(MatrixSoldierModel, -0.02f, glm::vec3(0, 1, 0));
+		modelMatrixMayow = glm::rotate(modelMatrixMayow, -0.02f, glm::vec3(0, 1, 0));
 		animationMayowIndex = 0;
 	}
 	if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
-		MatrixSoldierModel = glm::translate(MatrixSoldierModel, glm::vec3(0.0, 0.0, 0.02));
+		modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0, 0.0, 0.02));
 		animationMayowIndex = 0;
 	}
 	else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
-		MatrixSoldierModel = glm::translate(MatrixSoldierModel, glm::vec3(0.0, 0.0, -0.02));
+		modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0, 0.0, -0.02));
 		animationMayowIndex = 0;
 	}
 
@@ -983,35 +1294,139 @@ bool processInput(bool continueApplication) {
 void prepareScene(){
 
 	terrain.setShader(&shaderTerrain);
+	
+	modelRock.setShader(&shaderMulLighting);
+
+	modelAircraft.setShader(&shaderMulLighting);
+
+	// Eclipse
+	modelEclipseChasis.setShader(&shaderMulLighting);
+	modelEclipseFrontalWheels.setShader(&shaderMulLighting);
+	modelEclipseRearWheels.setShader(&shaderMulLighting);
+
+	// Helicopter
+	modelHeliChasis.setShader(&shaderMulLighting);
+	modelHeliHeli.setShader(&shaderMulLighting);
+	modelHeliHeliBack.setShader(&shaderMulLighting);
+
+	// Lamborginhi
+	modelLambo.setShader(&shaderMulLighting);
+	modelLamboLeftDor.setShader(&shaderMulLighting);
+	modelLamboRightDor.setShader(&shaderMulLighting);
+	modelLamboFrontLeftWheel.setShader(&shaderMulLighting);
+	modelLamboFrontRightWheel.setShader(&shaderMulLighting);
+	modelLamboRearLeftWheel.setShader(&shaderMulLighting);
+	modelLamboRearRightWheel.setShader(&shaderMulLighting);
+
+	// Dart Lego
+	modelDartLegoBody.setShader(&shaderMulLighting);
+	modelDartLegoMask.setShader(&shaderMulLighting);
+	modelDartLegoHead.setShader(&shaderMulLighting);
+	modelDartLegoLeftArm.setShader(&shaderMulLighting);
+	modelDartLegoRightArm.setShader(&shaderMulLighting);
+	modelDartLegoLeftHand.setShader(&shaderMulLighting);
+	modelDartLegoRightHand.setShader(&shaderMulLighting);
+	modelDartLegoLeftLeg.setShader(&shaderMulLighting);
+	modelDartLegoRightLeg.setShader(&shaderMulLighting);
+
 	//Lamp models
 	modelLamp1.setShader(&shaderMulLighting);
 	modelLamp2.setShader(&shaderMulLighting);
 	modelLampPost2.setShader(&shaderMulLighting);
 
+	//Buzz
+	modelBuzzTorso.setShader(&shaderMulLighting);
+	modelBuzzHead.setShader(&shaderMulLighting);
+	modelBuzzLeftArm.setShader(&shaderMulLighting);
+	modelBuzzLeftForeArm.setShader(&shaderMulLighting);
+	modelBuzzLeftHand.setShader(&shaderMulLighting);
+
+	//Grass
+	//modelGrass.setShader(&shaderMulLighting);
+
 	//Mayow
 	mayowModelAnimate.setShader(&shaderMulLighting);
 
-	ArmaModel.setShader(&shaderMulLighting);
-	TieModel.setShader(&shaderMulLighting);
-	XWingModel.setShader(&shaderMulLighting);
-	T47Model.setShader(&shaderMulLighting);
+	//Cowboy
+	cowboyModelAnimate.setShader(&shaderMulLighting);
+
+	//Guardian
+	guardianModelAnimate.setShader(&shaderMulLighting);
+
+	//Cyborg
+	cyborgModelAnimate.setShader(&shaderMulLighting);
+
+	// Fountain
+	modelFountain.setShader(&shaderMulLighting);
 }
 
 void prepareDepthScene(){
 
 	terrain.setShader(&shaderDepth);
+	
+	modelRock.setShader(&shaderDepth);
+
+	modelAircraft.setShader(&shaderDepth);
+
+	// Eclipse
+	modelEclipseChasis.setShader(&shaderDepth);
+	modelEclipseFrontalWheels.setShader(&shaderDepth);
+	modelEclipseRearWheels.setShader(&shaderDepth);
+
+	// Helicopter
+	modelHeliChasis.setShader(&shaderDepth);
+	modelHeliHeli.setShader(&shaderDepth);
+	modelHeliHeliBack.setShader(&shaderDepth);
+
+	// Lamborginhi
+	modelLambo.setShader(&shaderDepth);
+	modelLamboLeftDor.setShader(&shaderDepth);
+	modelLamboRightDor.setShader(&shaderDepth);
+	modelLamboFrontLeftWheel.setShader(&shaderDepth);
+	modelLamboFrontRightWheel.setShader(&shaderDepth);
+	modelLamboRearLeftWheel.setShader(&shaderDepth);
+	modelLamboRearRightWheel.setShader(&shaderDepth);
+
+	// Dart Lego
+	modelDartLegoBody.setShader(&shaderDepth);
+	modelDartLegoMask.setShader(&shaderDepth);
+	modelDartLegoHead.setShader(&shaderDepth);
+	modelDartLegoLeftArm.setShader(&shaderDepth);
+	modelDartLegoRightArm.setShader(&shaderDepth);
+	modelDartLegoLeftHand.setShader(&shaderDepth);
+	modelDartLegoRightHand.setShader(&shaderDepth);
+	modelDartLegoLeftLeg.setShader(&shaderDepth);
+	modelDartLegoRightLeg.setShader(&shaderDepth);
 
 	//Lamp models
 	modelLamp1.setShader(&shaderDepth);
 	modelLamp2.setShader(&shaderDepth);
 	modelLampPost2.setShader(&shaderDepth);
+
+	//Buzz
+	modelBuzzTorso.setShader(&shaderDepth);
+	modelBuzzHead.setShader(&shaderDepth);
+	modelBuzzLeftArm.setShader(&shaderDepth);
+	modelBuzzLeftForeArm.setShader(&shaderDepth);
+	modelBuzzLeftHand.setShader(&shaderDepth);
+
+	//Grass
+	//modelGrass.setShader(&shaderDepth);
+
 	//Mayow
 	mayowModelAnimate.setShader(&shaderDepth);
 
-	ArmaModel.setShader(&shaderDepth);
-	TieModel.setShader(&shaderDepth);
-	XWingModel.setShader(&shaderDepth);
-	T47Model.setShader(&shaderDepth);
+	//Cowboy
+	cowboyModelAnimate.setShader(&shaderDepth);
+
+	//Guardian
+	guardianModelAnimate.setShader(&shaderDepth);
+
+	//Cyborg
+	cyborgModelAnimate.setShader(&shaderDepth);
+
+	// Fountain
+	modelFountain.setShader(&shaderDepth);
 }
 
 void renderSolidScene(){
@@ -1043,38 +1458,178 @@ void renderSolidScene(){
 	/*******************************************
 	 * Custom objects obj
 	 *******************************************/
+	//Rock render
+	matrixModelRock[3][1] = terrain.getHeightTerrain(matrixModelRock[3][0], matrixModelRock[3][2]);
+	modelRock.render(matrixModelRock);
 	// Forze to enable the unit texture to 0 always ----------------- IMPORTANT
-
-	MatrixTieModel[3][1] = terrain.getHeightTerrain(MatrixTieModel[3][0], MatrixTieModel[3][2]);
-	TieModel.render(MatrixTieModel);
-
-	MatrixSoldierModel[3][1] = terrain.getHeightTerrain(MatrixSoldierModel[3][0], MatrixSoldierModel[3][2]);
-	SoldierModel.render(MatrixSoldierModel);
-
 	glActiveTexture(GL_TEXTURE0);
 
 	// Render for the eclipse car
+	modelMatrixEclipse[3][1] = terrain.getHeightTerrain(modelMatrixEclipse[3][0], modelMatrixEclipse[3][2]);
+	glm::mat4 modelMatrixEclipseChasis = glm::mat4(modelMatrixEclipse);
+	modelMatrixEclipseChasis = glm::scale(modelMatrixEclipse, glm::vec3(0.5, 0.5, 0.5));
+	modelEclipseChasis.render(modelMatrixEclipseChasis);
+
+	glm::mat4 modelMatrixFrontalWheels = glm::mat4(modelMatrixEclipseChasis);
+	modelMatrixFrontalWheels = glm::translate(modelMatrixFrontalWheels, glm::vec3(0.0, 1.05813, 4.11483 ));
+	modelMatrixFrontalWheels = glm::rotate(modelMatrixFrontalWheels, rotWheelsY, glm::vec3(0, 1, 0));
+	modelMatrixFrontalWheels = glm::rotate(modelMatrixFrontalWheels, rotWheelsX, glm::vec3(1, 0, 0));
+	modelMatrixFrontalWheels = glm::translate(modelMatrixFrontalWheels, glm::vec3(0.0, -1.05813, -4.11483));
+	modelEclipseFrontalWheels.render(modelMatrixFrontalWheels);
+
+	glm::mat4 modelMatrixRearWheels = glm::mat4(modelMatrixEclipseChasis);
+	modelMatrixRearWheels = glm::translate(modelMatrixRearWheels, glm::vec3(0.0, 1.05813, -4.35157 ));
+	modelMatrixRearWheels = glm::rotate(modelMatrixRearWheels, rotWheelsX, glm::vec3(1, 0, 0));
+	modelMatrixRearWheels = glm::translate(modelMatrixRearWheels, glm::vec3(0.0, -1.05813, 4.35157));
+	modelEclipseRearWheels.render(modelMatrixRearWheels);
 
 	// Render lamp
+	for(int i = 0; i < lamp1Position.size(); i++){
+		lamp1Position[i].y = terrain.getHeightTerrain(lamp1Position[i].x, lamp1Position[i].z);
+		modelLamp1.setPosition(lamp1Position[i]);
+		modelLamp1.setScale(glm::vec3(0.5));
+		modelLamp1.setOrientation(glm::vec3(0, lamp1Orientation[i], 0));
+		modelLamp1.render();
+	}
+	for(int i = 0; i < lamp2Position.size(); i++){
+		lamp2Position[i].y = terrain.getHeightTerrain(lamp2Position[i].x, lamp2Position[i].z);
+		modelLamp2.setPosition(lamp2Position[i]);
+		modelLamp2.setScale(glm::vec3(0.5));
+		modelLamp2.setOrientation(glm::vec3(0, lamp2Orientation[i], 0));
+		modelLamp2.render();
+		modelLampPost2.setPosition(lamp2Position[i]);
+		modelLampPost2.setScale(glm::vec3(0.5));
+		modelLampPost2.setOrientation(glm::vec3(0, lamp2Orientation[i], 0));
+		modelLampPost2.render();
+	}
+
+	// Dart lego
+	// Se deshabilita el cull faces IMPORTANTE para la capa
+	glDisable(GL_CULL_FACE);
+	modelMatrixDart[3][1] = terrain.getHeightTerrain(modelMatrixDart[3][0], modelMatrixDart[3][2]);
+	glm::mat4 modelMatrixDartBody = glm::mat4(modelMatrixDart);
+	modelMatrixDartBody = glm::scale(modelMatrixDartBody, glm::vec3(0.5, 0.5, 0.5));
+	modelDartLegoBody.render(modelMatrixDartBody);
+	glm::mat4 modelMatrixDartHead = glm::mat4(modelMatrixDartBody);
+	modelMatrixDartHead = glm::rotate(modelMatrixDartHead, rotDartHead, glm::vec3(0, 1, 0));
+	modelDartLegoHead.render(modelMatrixDartHead);
+	modelDartLegoMask.render(modelMatrixDartHead);
+	glm::mat4 modelMatrixDartLeftArm = glm::mat4(modelMatrixDartBody);
+	modelMatrixDartLeftArm = glm::translate(modelMatrixDartLeftArm, glm::vec3(-0.023515, 2.43607, 0.446066));
+	modelMatrixDartLeftArm = glm::rotate(modelMatrixDartLeftArm, glm::radians(-5.0f), glm::vec3(1, 0, 0));
+	modelMatrixDartLeftArm = glm::rotate(modelMatrixDartLeftArm, rotDartLeftArm, glm::vec3(0, 0, 1));
+	modelMatrixDartLeftArm = glm::rotate(modelMatrixDartLeftArm, glm::radians(5.0f), glm::vec3(1, 0, 0));
+	modelMatrixDartLeftArm = glm::translate(modelMatrixDartLeftArm, glm::vec3(0.023515, -2.43607, -0.446066));
+	modelDartLegoLeftArm.render(modelMatrixDartLeftArm);
+	glm::mat4 modelMatrixDartLeftHand = glm::mat4(modelMatrixDartLeftArm);
+	modelMatrixDartLeftHand = glm::translate(modelMatrixDartLeftHand, glm::vec3(0.201343, 1.68317, 0.99774));
+	modelMatrixDartLeftHand = glm::rotate(modelMatrixDartLeftHand, glm::radians(-5.0f), glm::vec3(1, 0, 0));
+	modelMatrixDartLeftHand = glm::rotate(modelMatrixDartLeftHand, rotDartLeftHand, glm::vec3(0, 1, 0));
+	modelMatrixDartLeftHand = glm::rotate(modelMatrixDartLeftHand, glm::radians(5.0f), glm::vec3(1, 0, 0));
+	modelMatrixDartLeftHand = glm::translate(modelMatrixDartLeftHand, glm::vec3(-0.201343, -1.68317, -0.99774));
+	modelDartLegoLeftHand.render(modelMatrixDartLeftHand);
+	glm::mat4 modelMatrixDartRightArm = glm::mat4(modelMatrixDartBody);
+	modelMatrixDartRightArm = glm::translate(modelMatrixDartRightArm, glm::vec3(-0.023515, 2.43607, -0.446066));
+	modelMatrixDartRightArm = glm::rotate(modelMatrixDartRightArm, glm::radians(5.0f), glm::vec3(1, 0, 0));
+	modelMatrixDartRightArm = glm::rotate(modelMatrixDartRightArm, rotDartRightArm, glm::vec3(0, 0, 1));
+	modelMatrixDartRightArm = glm::rotate(modelMatrixDartRightArm, glm::radians(-5.0f), glm::vec3(1, 0, 0));
+	modelMatrixDartRightArm = glm::translate(modelMatrixDartRightArm, glm::vec3(0.023515, -2.43607, 0.446066));
+	modelDartLegoRightArm.render(modelMatrixDartRightArm);
+	glm::mat4 modelMatrixDartRightHand = glm::mat4(modelMatrixDartRightArm);
+	modelMatrixDartRightHand = glm::translate(modelMatrixDartRightHand, glm::vec3(0.201343, 1.68317, -0.99774));
+	modelMatrixDartRightHand = glm::rotate(modelMatrixDartRightHand, glm::radians(5.0f), glm::vec3(1, 0, 0));
+	modelMatrixDartRightHand = glm::rotate(modelMatrixDartRightHand, rotDartRightHand, glm::vec3(0, 1, 0));
+	modelMatrixDartRightHand = glm::rotate(modelMatrixDartRightHand, glm::radians(-5.0f), glm::vec3(1, 0, 0));
+	modelMatrixDartRightHand = glm::translate(modelMatrixDartRightHand, glm::vec3(-0.201343, -1.68317, 0.99774));
+	modelDartLegoRightHand.render(modelMatrixDartRightHand);
+	glm::mat4 modelMatrixDartLeftLeg = glm::mat4(modelMatrixDartBody);
+	modelMatrixDartLeftLeg = glm::translate(modelMatrixDartLeftLeg, glm::vec3(0, 1.12632, 0.423349));
+	modelMatrixDartLeftLeg = glm::rotate(modelMatrixDartLeftLeg, rotDartLeftLeg, glm::vec3(0, 0, 1));
+	modelMatrixDartLeftLeg = glm::translate(modelMatrixDartLeftLeg, glm::vec3(0, -1.12632, -0.423349));
+	modelDartLegoLeftLeg.render(modelMatrixDartLeftLeg);
+	glm::mat4 modelMatrixDartRightLeg = glm::mat4(modelMatrixDartBody);
+	modelMatrixDartRightLeg = glm::translate(modelMatrixDartRightLeg, glm::vec3(0, 1.12632, -0.423349));
+	modelMatrixDartRightLeg = glm::rotate(modelMatrixDartRightLeg, rotDartRightLeg, glm::vec3(0, 0, 1));
+	modelMatrixDartRightLeg = glm::translate(modelMatrixDartRightLeg, glm::vec3(0, -1.12632, 0.423349));
+	modelDartLegoRightLeg.render(modelMatrixDartRightLeg);
+	// Se regresa el cull faces IMPORTANTE para la capa
+	glEnable(GL_CULL_FACE);
+
 	
+	glm::mat4 modelMatrixTorso = glm::mat4(modelMatrixBuzz);
+	modelMatrixTorso = glm::scale(modelMatrixTorso, glm::vec3(3.0));
+	modelBuzzTorso.render(modelMatrixTorso);
+	glm::mat4 modelMatrizHead = glm::mat4(modelMatrixTorso);
+	modelMatrizHead = glm::translate(modelMatrizHead, glm::vec3(0, 0, -0.017506));
+	modelMatrizHead = glm::rotate(modelMatrizHead, rotBuzzHead, glm::vec3(0, 1, 0));
+	modelMatrizHead = glm::translate(modelMatrizHead, glm::vec3(0, 0, 0.017506));
+	modelBuzzHead.render(modelMatrizHead);
+
+	glm::mat4 modelMatrixLeftArm = glm::mat4(modelMatrixTorso);
+	modelMatrixLeftArm = glm::translate(modelMatrixLeftArm, glm::vec3(0.179974, 0.577592, -0.022103));
+	modelMatrixLeftArm = glm::rotate(modelMatrixLeftArm, glm::radians(-65.0f), glm::vec3(0, 0, 1));
+	modelMatrixLeftArm = glm::rotate(modelMatrixLeftArm, rotBuzzLeftarm, glm::vec3(0, 1, 0));
+	modelMatrixLeftArm = glm::translate(modelMatrixLeftArm, glm::vec3(-0.179974, -0.577592, 0.022103));
+	modelBuzzLeftArm.render(modelMatrixLeftArm);
+
+	glm::mat4 modelMatrixLeftForeArm = glm::mat4(modelMatrixLeftArm);
+	modelMatrixLeftForeArm = glm::translate(modelMatrixLeftForeArm, glm::vec3(0.298368, 0.583773, 0.008465));
+	modelMatrixLeftForeArm = glm::rotate(modelMatrixLeftForeArm, rotBuzzLeftForeArm, glm::vec3(0, 1, 0));
+	modelMatrixLeftForeArm = glm::translate(modelMatrixLeftForeArm, glm::vec3(-0.298368, -0.583773, -0.008465));
+	modelBuzzLeftForeArm.render(modelMatrixLeftForeArm);
+
+	glm::mat4 modelMatrixLeftHand = glm::mat4(modelMatrixLeftForeArm);
+	modelMatrixLeftHand = glm::translate(modelMatrixLeftHand, glm::vec3(0.416066, 0.587046, 0.076258));
+	modelMatrixLeftHand = glm::rotate(modelMatrixLeftHand, glm::radians(45.0f), glm::vec3(0, 1, 0));
+	modelMatrixLeftHand = glm::rotate(modelMatrixLeftHand, rotBuzzLeftHand, glm::vec3(1, 0, 0));
+	modelMatrixLeftHand = glm::rotate(modelMatrixLeftHand, glm::radians(-45.0f), glm::vec3(0, 1, 0));
+	modelMatrixLeftHand = glm::translate(modelMatrixLeftHand, glm::vec3(-0.416066, -0.587046, -0.076258));
+	modelBuzzLeftHand.render(modelMatrixLeftHand);
+
 	/*****************************************
 	 * Objetos animados por huesos
 	 * **************************************/
-
-	glm::vec3 ejey = glm::normalize(terrain.getNormalTerrain(MatrixSoldierModel[3][0], MatrixSoldierModel[3][2]));
-	glm::vec3 ejex = glm::vec3(MatrixSoldierModel[0]);
+	/*glm::vec3 ejey = glm::normalize(terrain.getNormalTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2]));
+	glm::vec3 ejex = glm::vec3(modelMatrixMayow[0]);
 	glm::vec3 ejez = glm::normalize(glm::cross(ejex, ejey));
 	ejex = glm::normalize(glm::cross(ejey, ejez));
-	MatrixSoldierModel[0] = glm::vec4(ejex, 0.0);
-	MatrixSoldierModel[1] = glm::vec4(ejey, 0.0);
-	MatrixSoldierModel[2] = glm::vec4(ejez, 0.0);
-	MatrixSoldierModel[3][1] = -GRAVITY * tmv * tmv + 3.5 * tmv + terrain.getHeightTerrain(MatrixSoldierModel[3][0], MatrixSoldierModel[3][2]);
+	modelMatrixMayow[0] = glm::vec4(ejex, 0.0);
+	modelMatrixMayow[1] = glm::vec4(ejey, 0.0);
+	modelMatrixMayow[2] = glm::vec4(ejez, 0.0);
+	modelMatrixMayow[3][1] = -GRAVITY * tmv * tmv + 3.5 * tmv + terrain.getHeightTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2]);
 	tmv = currTime - startTimeJump;
-	if(MatrixSoldierModel[3][1] < terrain.getHeightTerrain(MatrixSoldierModel[3][0], MatrixSoldierModel[3][2])){
+	if(modelMatrixMayow[3][1] < terrain.getHeightTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2])){
 		isJump = false;
-		MatrixSoldierModel[3][1] = terrain.getHeightTerrain(MatrixSoldierModel[3][0], MatrixSoldierModel[3][2]);
-	}
+		modelMatrixMayow[3][1] = terrain.getHeightTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2]);
+	}*/
+	glm::mat4 modelMatrixMayowBody = glm::mat4(modelMatrixMayow);
+	modelMatrixMayowBody = glm::scale(modelMatrixMayowBody, glm::vec3(1.0f));
+	mayowModelAnimate.setAnimationIndex(animationMayowIndex);
+	mayowModelAnimate.render(modelMatrixMayowBody);
+	//animationMayowIndex = 1;
+
+	modelMatrixCowboy[3][1] = terrain.getHeightTerrain(modelMatrixCowboy[3][0], modelMatrixCowboy[3][2]);
+	glm::mat4 modelMatrixCowboyBody = glm::mat4(modelMatrixCowboy);
+	modelMatrixCowboyBody = glm::scale(modelMatrixCowboyBody, glm::vec3(0.0021f));
+	cowboyModelAnimate.render(modelMatrixCowboyBody);
+
+	modelMatrixGuardian[3][1] = terrain.getHeightTerrain(modelMatrixGuardian[3][0], modelMatrixGuardian[3][2]);
+	glm::mat4 modelMatrixGuardianBody = glm::mat4(modelMatrixGuardian);
+	modelMatrixGuardianBody = glm::scale(modelMatrixGuardianBody, glm::vec3(0.04f));
+	guardianModelAnimate.render(modelMatrixGuardianBody);
+
+	modelMatrixCyborg[3][1] = terrain.getHeightTerrain(modelMatrixCyborg[3][0], modelMatrixCyborg[3][2]);
+	glm::mat4 modelMatrixCyborgBody = glm::mat4(modelMatrixCyborg);
+	modelMatrixCyborgBody = glm::scale(modelMatrixCyborgBody, glm::vec3(0.009f));
+	cyborgModelAnimate.setAnimationIndex(1);
+	cyborgModelAnimate.render(modelMatrixCyborgBody);
+
+	// Fountain
 	glDisable(GL_CULL_FACE);
+	modelMatrixFountain[3][1] = terrain.getHeightTerrain(modelMatrixFountain[3][0] , modelMatrixFountain[3][2]) + 0.2;
+	glm::mat4 modelMatrixFountainCopy = glm::scale(modelMatrixFountain, glm::vec3(10.0f, 10.0f, 10.0f));
+	modelFountain.render(modelMatrixFountainCopy);
+	glEnable(GL_CULL_FACE);
 
 	/*******************************************
 	 * Skybox
@@ -1094,9 +1649,25 @@ void renderSolidScene(){
 }
 
 void renderAlphaScene(bool render = true){
+	/**********
+	 * Update the position with alpha objects
+	 */
+	// Update the aircraft
+	blendingUnsorted.find("aircraft")->second = glm::vec3(modelMatrixAircraft[3]);
+	// Update the lambo
+	blendingUnsorted.find("lambo")->second = glm::vec3(modelMatrixLambo[3]);
+	// Update the helicopter
+	blendingUnsorted.find("heli")->second = glm::vec3(modelMatrixHeli[3]);
 
+	/**********
+	 * Sorter with alpha objects
+	 */
 	std::map<float, std::pair<std::string, glm::vec3>> blendingSorted;
 	std::map<std::string, glm::vec3>::iterator itblend;
+	for(itblend = blendingUnsorted.begin(); itblend != blendingUnsorted.end(); itblend++){
+		float distanceFromView = glm::length(camera->getPosition() - itblend->second);
+		blendingSorted[distanceFromView] = std::make_pair(itblend->first, itblend->second);
+	}
 
 	/**********
 	 * Render de las transparencias
@@ -1105,8 +1676,42 @@ void renderAlphaScene(bool render = true){
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_CULL_FACE);
 	for(std::map<float, std::pair<std::string, glm::vec3> >::reverse_iterator it = blendingSorted.rbegin(); it != blendingSorted.rend(); it++){
-	
-		
+		if(it->second.first.compare("aircraft") == 0){
+			// Render for the aircraft model
+			glm::mat4 modelMatrixAircraftBlend = glm::mat4(modelMatrixAircraft);
+			modelMatrixAircraftBlend[3][1] = terrain.getHeightTerrain(modelMatrixAircraftBlend[3][0], modelMatrixAircraftBlend[3][2]) + 2.0;
+			modelAircraft.render(modelMatrixAircraftBlend);
+		}
+		else if(it->second.first.compare("lambo") == 0){
+			// Lambo car
+			glm::mat4 modelMatrixLamboBlend = glm::mat4(modelMatrixLambo);
+			modelMatrixLamboBlend[3][1] = terrain.getHeightTerrain(modelMatrixLamboBlend[3][0], modelMatrixLamboBlend[3][2]);
+			modelMatrixLamboBlend = glm::scale(modelMatrixLamboBlend, glm::vec3(1.3, 1.3, 1.3));
+			modelLambo.render(modelMatrixLamboBlend);
+			glActiveTexture(GL_TEXTURE0);
+			glm::mat4 modelMatrixLamboLeftDor = glm::mat4(modelMatrixLamboBlend);
+			modelMatrixLamboLeftDor = glm::translate(modelMatrixLamboLeftDor, glm::vec3(1.08676, 0.707316, 0.982601));
+			modelMatrixLamboLeftDor = glm::rotate(modelMatrixLamboLeftDor, glm::radians(dorRotCount), glm::vec3(1.0, 0, 0));
+			modelMatrixLamboLeftDor = glm::translate(modelMatrixLamboLeftDor, glm::vec3(-1.08676, -0.707316, -0.982601));
+			modelLamboLeftDor.render(modelMatrixLamboLeftDor);
+			modelLamboRightDor.render(modelMatrixLamboBlend);
+			modelLamboFrontLeftWheel.render(modelMatrixLamboBlend);
+			modelLamboFrontRightWheel.render(modelMatrixLamboBlend);
+			modelLamboRearLeftWheel.render(modelMatrixLamboBlend);
+			modelLamboRearRightWheel.render(modelMatrixLamboBlend);
+			// Se regresa el cull faces IMPORTANTE para las puertas
+		}
+		else if(it->second.first.compare("heli") == 0){
+			// Helicopter
+			glm::mat4 modelMatrixHeliChasis = glm::mat4(modelMatrixHeli);
+			modelHeliChasis.render(modelMatrixHeliChasis);
+
+			glm::mat4 modelMatrixHeliHeli = glm::mat4(modelMatrixHeliChasis);
+			modelMatrixHeliHeli = glm::translate(modelMatrixHeliHeli, glm::vec3(0.0, 0.0, -0.249548));
+			modelMatrixHeliHeli = glm::rotate(modelMatrixHeliHeli, rotHelHelY, glm::vec3(0, 1, 0));
+			modelMatrixHeliHeli = glm::translate(modelMatrixHeliHeli, glm::vec3(0.0, 0.0, 0.249548));
+			modelHeliHeli.render(modelMatrixHeliHeli);
+		}
 	}
 	glEnable(GL_CULL_FACE);
 	glDisable(GL_BLEND);
@@ -1138,29 +1743,44 @@ void applicationLoop() {
 	glm::vec3 target;
 	float angleTarget;
 
+	modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(27.5, 0, 30.0));
+	modelMatrixEclipse = glm::rotate(modelMatrixEclipse, glm::radians(180.0f), glm::vec3(0, 1, 0));
 	int state = 0;
 	float advanceCount = 0.0;
 	float rotCount = 0.0;
 	int numberAdvance = 0;
 	int maxAdvance = 0.0;
 
+	matrixModelRock = glm::translate(matrixModelRock, glm::vec3(-3.0, 0.0, 2.0));
 
+	modelMatrixHeli = glm::translate(modelMatrixHeli, glm::vec3(5.0, 10.0, -5.0));
 
-	
-	MatrixSoldierModel = glm::translate(MatrixSoldierModel, glm::vec3(0, 0.0, 0.0));
-	MatrixSoldierModel = glm::scale(MatrixSoldierModel,glm::vec3(0.05));
+	modelMatrixAircraft = glm::translate(modelMatrixAircraft, glm::vec3(10.0, 2.0, -17.5));
 
-	MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(-3.0, 0.0, 2.0));
+	modelMatrixLambo = glm::translate(modelMatrixLambo, glm::vec3(23.0, 0.0, 0.0));
 
-	MatrixT47Model = glm::translate(MatrixT47Model, glm::vec3(3.0, 0.0, 2.0));
-	MatrixXWingModel = glm::translate(MatrixXWingModel, glm::vec3(10.0, 0.0, 2.0));
+	modelMatrixDart = glm::translate(modelMatrixDart, glm::vec3(3.0, 0.0, 20.0));
 
+	modelMatrixBuzz = glm::translate(modelMatrixBuzz, glm::vec3(15.0, 0.0, -10.0));
 
+	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(13.0f, 10.0f, -5.0f));
+	modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));
 
+	modelMatrixCowboy = glm::translate(modelMatrixCowboy, glm::vec3(13.0, 0.05, 0.0));
 
+	modelMatrixGuardian = glm::translate(modelMatrixGuardian, glm::vec3(15, 0.05, 0.0));
+	modelMatrixGuardian = glm::rotate(modelMatrixGuardian, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
+
+	modelMatrixCyborg = glm::translate(modelMatrixCyborg, glm::vec3(5.0f, 0.05, 0.0f));
+
+	modelMatrixFountain = glm::translate(modelMatrixFountain, glm::vec3(5.0, 0.0, -40.0));
 
 	// Variables to interpolation key frames
 	fileName = "../animaciones/animation_dart_joints.txt";
+	keyFramesDartJoints = getKeyRotFrames(fileName);
+	keyFramesDart = getKeyFrames("../animaciones/animation_dart.txt");
+	keyFramesBuzzJoints = getKeyRotFrames("../animaciones/animation_buzz_joints.txt");
+	keyFramesBuzz = getKeyFrames("../animaciones/animation_buzz.txt");
 
 	lastTime = TimeManager::Instance().GetTime();
 
@@ -1193,11 +1813,15 @@ void applicationLoop() {
 		glm::mat4 projection = glm::perspective(glm::radians(45.0f),
 				(float) screenWidth / (float) screenHeight, 0.01f, 100.0f);
 
-	
-		{
-			axis = glm::axis(glm::quat_cast(MatrixSoldierModel));
-			angleTarget = glm::angle(glm::quat_cast(MatrixSoldierModel));
-			target = MatrixSoldierModel[3];
+		if(modelSelected == 1){
+			axis = glm::axis(glm::quat_cast(modelMatrixDart));
+			angleTarget = glm::angle(glm::quat_cast(modelMatrixDart));
+			target = modelMatrixDart[3];
+		}
+		else{
+			axis = glm::axis(glm::quat_cast(modelMatrixMayow));
+			angleTarget = glm::angle(glm::quat_cast(modelMatrixMayow));
+			target = modelMatrixMayow[3];
 		}
 
 		if(std::isnan(angleTarget))
@@ -1248,7 +1872,11 @@ void applicationLoop() {
 				glm::value_ptr(view));
 		shaderTerrain.setMatrix4("lightSpaceMatrix", 1, false,
 				glm::value_ptr(lightSpaceMatrix));
-
+		// Settea la matriz de vista y projection al shader para el fountain
+		/*shaderParticlesFountain.setMatrix4("projection", 1, false,
+				glm::value_ptr(projection));
+		shaderParticlesFountain.setMatrix4("view", 1, false,
+				glm::value_ptr(view));*/
 
 		/*******************************************
 		 * Propiedades de neblina
@@ -1277,9 +1905,11 @@ void applicationLoop() {
 		 *******************************************/
 		shaderMulLighting.setInt("spotLightCount", 1);
 		shaderTerrain.setInt("spotLightCount", 1);
+		glm::vec3 spotPosition = glm::vec3(modelMatrixHeli * glm::vec4(0.0, 0.2, 1.75, 1.0));
 		shaderMulLighting.setVectorFloat3("spotLights[0].light.ambient", glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		shaderMulLighting.setVectorFloat3("spotLights[0].light.diffuse", glm::value_ptr(glm::vec3(0.2, 0.3, 0.2)));
 		shaderMulLighting.setVectorFloat3("spotLights[0].light.specular", glm::value_ptr(glm::vec3(0.3, 0.3, 0.3)));
+		shaderMulLighting.setVectorFloat3("spotLights[0].position", glm::value_ptr(spotPosition));
 		shaderMulLighting.setVectorFloat3("spotLights[0].direction", glm::value_ptr(glm::vec3(0, -1, 0)));
 		shaderMulLighting.setFloat("spotLights[0].constant", 1.0);
 		shaderMulLighting.setFloat("spotLights[0].linear", 0.07);
@@ -1289,6 +1919,7 @@ void applicationLoop() {
 		shaderTerrain.setVectorFloat3("spotLights[0].light.ambient", glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		shaderTerrain.setVectorFloat3("spotLights[0].light.diffuse", glm::value_ptr(glm::vec3(0.2, 0.3, 0.2)));
 		shaderTerrain.setVectorFloat3("spotLights[0].light.specular", glm::value_ptr(glm::vec3(0.3, 0.3, 0.3)));
+		shaderTerrain.setVectorFloat3("spotLights[0].position", glm::value_ptr(spotPosition));
 		shaderTerrain.setVectorFloat3("spotLights[0].direction", glm::value_ptr(glm::vec3(0, -1, 0)));
 		shaderTerrain.setFloat("spotLights[0].constant", 1.0);
 		shaderTerrain.setFloat("spotLights[0].linear", 0.07);
@@ -1374,6 +2005,22 @@ void applicationLoop() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		/*******************************************
+		 * Debug to view the texture view map
+		 *******************************************/
+		// reset viewport
+		/*glViewport(0, 0, screenWidth, screenHeight);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// render Depth map to quad for visual debugging
+		shaderViewDepth.setMatrix4("projection", 1, false, glm::value_ptr(glm::mat4(1.0)));
+		shaderViewDepth.setMatrix4("view", 1, false, glm::value_ptr(glm::mat4(1.0)));
+		shaderViewDepth.setFloat("near_plane", near_plane);
+		shaderViewDepth.setFloat("far_plane", far_plane);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, depthMap);
+		boxViewDepth.setScale(glm::vec3(2.0, 2.0, 1.0));
+		boxViewDepth.render();*/
+
+		/*******************************************
 		 * 2.- We render the normal objects
 		 *******************************************/
 		glViewport(0, 0, screenWidth, screenHeight);
@@ -1389,7 +2036,41 @@ void applicationLoop() {
 		 * Creacion de colliders
 		 * IMPORTANT do this before interpolations
 		 *******************************************/
+		// Collider del dart vader lego
+		glm::mat4 modelmatrixColliderDart = glm::mat4(modelMatrixDart);
+		AbstractModel::OBB dartLegoBodyCollider;
+		// Set the orientation of collider before doing the scale
+		dartLegoBodyCollider.u = glm::quat_cast(modelMatrixDart);
+		modelmatrixColliderDart = glm::scale(modelmatrixColliderDart, glm::vec3(0.5, 0.5, 0.5));
+		modelmatrixColliderDart = glm::translate(modelmatrixColliderDart,
+				glm::vec3(modelDartLegoBody.getObb().c.x,
+						modelDartLegoBody.getObb().c.y,
+						modelDartLegoBody.getObb().c.z));
+		dartLegoBodyCollider.c = glm::vec3(modelmatrixColliderDart[3]);
+		dartLegoBodyCollider.e = modelDartLegoBody.getObb().e * glm::vec3(0.5, 0.5, 0.5);
+		addOrUpdateColliders(collidersOBB, "dart", dartLegoBodyCollider, modelMatrixDart);
 
+		// Collider del aricraft
+		glm::mat4 modelMatrixColliderAircraft = glm::mat4(modelMatrixAircraft);
+		AbstractModel::OBB aircraftCollider;
+		// Set the orientation of collider before doing the scale
+		aircraftCollider.u = glm::quat_cast(modelMatrixAircraft);
+		modelMatrixColliderAircraft = glm::scale(modelMatrixColliderAircraft,
+				glm::vec3(1.0, 1.0, 1.0));
+		modelMatrixColliderAircraft = glm::translate(
+				modelMatrixColliderAircraft, modelAircraft.getObb().c);
+		aircraftCollider.c = glm::vec3(modelMatrixColliderAircraft[3]);
+		aircraftCollider.e = modelAircraft.getObb().e * glm::vec3(1.0, 1.0, 1.0);
+		addOrUpdateColliders(collidersOBB, "aircraft", aircraftCollider, modelMatrixAircraft);
+
+		//Collider del la rock
+		AbstractModel::SBB rockCollider;
+		glm::mat4 modelMatrixColliderRock= glm::mat4(matrixModelRock);
+		modelMatrixColliderRock = glm::scale(modelMatrixColliderRock, glm::vec3(1.0, 1.0, 1.0));
+		modelMatrixColliderRock = glm::translate(modelMatrixColliderRock, modelRock.getSbb().c);
+		rockCollider.c = glm::vec3(modelMatrixColliderRock[3]);
+		rockCollider.ratio = modelRock.getSbb().ratio * 1.0;
+		addOrUpdateColliders(collidersSBB, "rock", rockCollider, matrixModelRock);
 
 		// Lamps1 colliders
 		for (int i = 0; i < lamp1Position.size(); i++){
@@ -1427,19 +2108,19 @@ void applicationLoop() {
 
 		// Collider de mayow
 		AbstractModel::OBB mayowCollider;
-		glm::mat4 modelmatrixColliderMayow = glm::mat4(MatrixSoldierModel);
+		glm::mat4 modelmatrixColliderMayow = glm::mat4(modelMatrixMayow);
 		modelmatrixColliderMayow = glm::rotate(modelmatrixColliderMayow,
 				glm::radians(-90.0f), glm::vec3(1, 0, 0));
 		// Set the orientation of collider before doing the scale
 		mayowCollider.u = glm::quat_cast(modelmatrixColliderMayow);
-		modelmatrixColliderMayow = glm::scale(modelmatrixColliderMayow, glm::vec3(0.021, 0.021, 0.021));
+		modelmatrixColliderMayow = glm::scale(modelmatrixColliderMayow, glm::vec3(10.0,10.0,10.0));
 		modelmatrixColliderMayow = glm::translate(modelmatrixColliderMayow,
-				glm::vec3(SoldierModel.getObb().c.x,
-						SoldierModel.getObb().c.y,
-						SoldierModel.getObb().c.z));
-		mayowCollider.e = SoldierModel.getObb().e * glm::vec3(0.021, 0.021, 0.021) * glm::vec3(0.787401574, 0.787401574, 0.787401574);
+				glm::vec3(mayowModelAnimate.getObb().c.x,
+						mayowModelAnimate.getObb().c.y,
+						mayowModelAnimate.getObb().c.z));
+		mayowCollider.e = mayowModelAnimate.getObb().e * glm::vec3(1.0, 1.0, 1.0);
 		mayowCollider.c = glm::vec3(modelmatrixColliderMayow[3]);
-		addOrUpdateColliders(collidersOBB, "mayow", mayowCollider, MatrixSoldierModel);
+		addOrUpdateColliders(collidersOBB, "mayow", mayowCollider, modelMatrixMayow);
 
 		/*******************************************
 		 * Render de colliders
@@ -1538,12 +2219,14 @@ void applicationLoop() {
 					addOrUpdateColliders(collidersOBB, itCollision->first);
 				else {
 					if (itCollision->first.compare("mayow") == 0)
-						MatrixSoldierModel = std::get<1>(obbBuscado->second);
+						modelMatrixMayow = std::get<1>(obbBuscado->second);
+					if (itCollision->first.compare("dart") == 0)
+						modelMatrixDart = std::get<1>(obbBuscado->second);
 				}
 			}
 		}
 
-		glm::mat4 modelMatrixRayMay = glm::mat4(MatrixSoldierModel);
+		glm::mat4 modelMatrixRayMay = glm::mat4(modelMatrixMayow);
 		modelMatrixRayMay = glm::translate(modelMatrixRayMay, glm::vec3(0, 1, 0));
 		float maxDistanceRay = 10.0;
 		glm::vec3 rayDirection = modelMatrixRayMay[2];
@@ -1566,22 +2249,242 @@ void applicationLoop() {
 				std::cout << "Collision del rayo con el modelo " << itSBB->first 
 				<< std::endl;
 			}
-		}	
+		}
+		/*std::map<std::string, std::tuple<AbstractModel::OBB, glm::mat4, glm::mat4>>::
+			iterator itOBB;
+		for (itOBB = collidersOBB.begin(); itOBB != collidersOBB.end(); itOBB++) {
+			if (testRayOBB(ori, targetRay, std::get<0>(itOBB->second))) {
+				std::cout << "Collision del rayo con el modelo " << itOBB->first
+					<< std::endl;
+			}
+		}*/
+
+		// Esto es para ilustrar la transformacion inversa de los coliders
+		/*glm::vec3 cinv = glm::inverse(mayowCollider.u) * glm::vec4(rockCollider.c, 1.0);
+		glm::mat4 invColliderS = glm::mat4(1.0);
+		invColliderS = glm::translate(invColliderS, cinv);
+		invColliderS =  invColliderS * glm::mat4(mayowCollider.u);
+		invColliderS = glm::scale(invColliderS, glm::vec3(rockCollider.ratio * 2.0, rockCollider.ratio * 2.0, rockCollider.ratio * 2.0));
+		sphereCollider.setColor(glm::vec4(1.0, 1.0, 0.0, 1.0));
+		sphereCollider.enableWireMode();
+		sphereCollider.render(invColliderS);
+		glm::vec3 cinv2 = glm::inverse(mayowCollider.u) * glm::vec4(mayowCollider.c, 1.0);
+		glm::mat4 invColliderB = glm::mat4(1.0);
+		invColliderB = glm::translate(invColliderB, cinv2);
+		invColliderB = glm::scale(invColliderB, mayowCollider.e * 2.0f);
+		boxCollider.setColor(glm::vec4(1.0, 1.0, 0.0, 1.0));
+		boxCollider.enableWireMode();
+		boxCollider.render(invColliderB);
+		// Se regresa el color blanco
+		sphereCollider.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
+		boxCollider.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));*/
+		
+		// Animaciones por keyframes dart Vader
+		// Para salvar los keyframes
+		if(record && modelSelected == 1){
+			matrixDartJoints.push_back(rotDartHead);
+			matrixDartJoints.push_back(rotDartLeftArm);
+			matrixDartJoints.push_back(rotDartLeftHand);
+			matrixDartJoints.push_back(rotDartRightArm);
+			matrixDartJoints.push_back(rotDartRightHand);
+			matrixDartJoints.push_back(rotDartLeftLeg);
+			matrixDartJoints.push_back(rotDartRightLeg);
+			if(saveFrame){
+				saveFrame = false;
+				appendFrame(myfile, matrixDartJoints);
+			}
+		}
+		else if(keyFramesDartJoints.size() > 0){
+			// Para reproducir el frame
+			interpolationDartJoints = numPasosDartJoints / (float) maxNumPasosDartJoints;
+			numPasosDartJoints++;
+			if(interpolationDartJoints > 1.0){
+				interpolationDartJoints = 0;
+				numPasosDartJoints = 0;
+				indexFrameDartJoints = indexFrameDartJointsNext;
+				indexFrameDartJointsNext++;
+			}
+			if(indexFrameDartJointsNext > keyFramesDartJoints.size() -1)
+				indexFrameDartJointsNext = 0;
+			rotDartHead = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 0, interpolationDartJoints);
+			rotDartLeftArm = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 1, interpolationDartJoints);
+			rotDartLeftHand = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 2, interpolationDartJoints);
+			rotDartRightArm = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 3, interpolationDartJoints);
+			rotDartRightHand = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 4, interpolationDartJoints);
+			rotDartLeftLeg = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 5, interpolationDartJoints);
+			rotDartRightLeg = interpolate(keyFramesDartJoints, indexFrameDartJoints, indexFrameDartJointsNext, 6, interpolationDartJoints);
+		}
+		if(record && modelSelected == 2){
+			matrixDart.push_back(modelMatrixDart);
+			if(saveFrame){
+				saveFrame = false;
+				appendFrame(myfile, matrixDart);
+			}
+		}
+		else if(keyFramesDart.size() > 0){
+			interpolationDart = numPasosDart / (float) maxNumPasosDart;
+			numPasosDart++;
+			if(interpolationDart > 1.0){
+				numPasosDart = 0;
+				interpolationDart = 0;
+				indexFrameDart = indexFrameDartNext;
+				indexFrameDartNext++;
+			}
+			if(indexFrameDartNext > keyFramesDart.size() - 1)
+				indexFrameDartNext = 0;
+			modelMatrixDart = interpolate(keyFramesDart, indexFrameDart, indexFrameDartNext, 0, interpolationDart);
+		}
+		// Animaciones por keyframes buzz
+		// Para salvar los keyframes
+		if(record && modelSelected == 3){
+			matrixBuzzJoints.push_back(rotBuzzHead);
+			matrixBuzzJoints.push_back(rotBuzzLeftarm);
+			matrixBuzzJoints.push_back(rotBuzzLeftForeArm);
+			matrixBuzzJoints.push_back(rotBuzzLeftHand);
+			if(saveFrame){
+				saveFrame = false;
+				appendFrame(myfile, matrixBuzzJoints);
+			}
+		}
+		else if(keyFramesBuzzJoints.size() > 0){
+			// Para reproducir el frame
+			interpolationBuzzJoints = numPasosBuzzJoints / (float) maxNumPasosBuzzJoints;
+			numPasosBuzzJoints++;
+			if(interpolationBuzzJoints > 1.0){
+				interpolationBuzzJoints = 0;
+				numPasosBuzzJoints = 0;
+				indexFrameBuzzJoints = indexFrameBuzzJointsNext;
+				indexFrameBuzzJointsNext++;
+			}
+			if(indexFrameBuzzJointsNext > keyFramesBuzzJoints.size() -1)
+				indexFrameBuzzJointsNext = 0;
+			rotBuzzHead = interpolate(keyFramesBuzzJoints, indexFrameBuzzJoints, indexFrameBuzzJointsNext, 0, interpolationBuzzJoints);
+			rotBuzzLeftarm = interpolate(keyFramesBuzzJoints, indexFrameBuzzJoints, indexFrameBuzzJointsNext, 1, interpolationBuzzJoints);
+			rotBuzzLeftForeArm = interpolate(keyFramesBuzzJoints, indexFrameBuzzJoints, indexFrameBuzzJointsNext, 2, interpolationBuzzJoints);
+			rotBuzzLeftHand = interpolate(keyFramesBuzzJoints, indexFrameBuzzJoints, indexFrameBuzzJointsNext, 3, interpolationBuzzJoints);
+		}
+		if(record && modelSelected == 4){
+			matrixBuzz.push_back(modelMatrixBuzz);
+			if(saveFrame){
+				saveFrame = false;
+				appendFrame(myfile, matrixBuzz);
+			}
+		}
+		else if(keyFramesBuzz.size() > 0){
+			interpolationBuzz = numPasosBuzz / (float) maxNumPasosBuzz;
+			numPasosBuzz++;
+			if(interpolationBuzz > 1.0){
+				numPasosBuzz = 0;
+				interpolationBuzz = 0;
+				indexFrameBuzz = indexFrameBuzzNext;
+				indexFrameBuzzNext++;
+			}
+			if(indexFrameBuzzNext > keyFramesBuzz.size() - 1)
+				indexFrameBuzzNext = 0;
+			modelMatrixBuzz = interpolate(keyFramesBuzz, indexFrameBuzz, indexFrameBuzzNext, 0, interpolationBuzz);
+		}
+		
+		/**********Maquinas de estado*************/
+		// Maquina de estados para el carro eclipse
+		switch (state){
+		case 0:
+			if(numberAdvance == 0)
+				maxAdvance = 65.0;
+			else if(numberAdvance == 1)
+				maxAdvance = 49.0;
+			else if(numberAdvance == 2)
+				maxAdvance = 44.5;
+			else if(numberAdvance == 3)
+				maxAdvance = 49.0;
+			else if(numberAdvance == 4)
+				maxAdvance = 44.5;
+			state = 1;
+			break;
+		case 1:
+			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0f, 0.0f, avance));
+			advanceCount += avance;
+			rotWheelsX += 0.05;
+			rotWheelsY -= 0.02;
+			if(rotWheelsY < 0)
+				rotWheelsY = 0;
+			if(advanceCount > maxAdvance){
+				advanceCount = 0;
+				numberAdvance++;
+				state = 2;
+			}
+			break;
+		case 2:
+			modelMatrixEclipse = glm::translate(modelMatrixEclipse, glm::vec3(0.0, 0.0, 0.025f));
+			modelMatrixEclipse = glm::rotate(modelMatrixEclipse, glm::radians(giroEclipse), glm::vec3(0, 1, 0));
+			rotCount += giroEclipse;
+			rotWheelsX += 0.05;
+			rotWheelsY += 0.02;
+			if(rotWheelsY > 0.25)
+				rotWheelsY = 0.25;
+			if(rotCount >= 90.0f){
+				rotCount = 0;
+				state = 0;
+				if(numberAdvance > 4)
+					numberAdvance = 1;
+			}
+			break;
+		
+		default:
+			break;
+		}
+
+		// Maquina de estado de lambo
+		switch (stateDoor)
+		{
+		case 0:
+			dorRotCount += 0.5;
+			if(dorRotCount > 75)
+				stateDoor = 1;
+			break;
+		case 1:
+			dorRotCount -= 0.5;
+			if(dorRotCount < 0){
+				dorRotCount = 0.0;
+				stateDoor = 0;
+			}
+		
+		default:
+			break;
+		}
+
+		// Constantes de animaciones
+		rotHelHelY += 0.5;
+		rotHelHelBack += 0.5;
+		animationMayowIndex = 1;
+
 		glfwSwapBuffers(window);
 
 		/****************************+
 		 * Open AL sound data
 		 */
+		source0Pos[0] = modelMatrixFountain[3].x;
+		source0Pos[1] = modelMatrixFountain[3].y;
+		source0Pos[2] = modelMatrixFountain[3].z;
+		alSourcefv(source[0], AL_POSITION, source0Pos);
+
+		source1Pos[0] = modelMatrixGuardian[3].x;
+		source1Pos[1] = modelMatrixGuardian[3].y;
+		source1Pos[2] = modelMatrixGuardian[3].z;
+		alSourcefv(source[1], AL_POSITION, source1Pos);
 		
+		source2Pos[0] = modelMatrixDart[3].x;
+		source2Pos[1] = modelMatrixDart[3].y;
+		source2Pos[2] = modelMatrixDart[3].z;
+		alSourcefv(source[2], AL_POSITION, source2Pos);
 
 		// Listener for the Thris person camera
-		listenerPos[0] = MatrixSoldierModel[3].x;
-		listenerPos[1] = MatrixSoldierModel[3].y;
-		listenerPos[2] = MatrixSoldierModel[3].z;
+		listenerPos[0] = modelMatrixMayow[3].x;
+		listenerPos[1] = modelMatrixMayow[3].y;
+		listenerPos[2] = modelMatrixMayow[3].z;
 		alListenerfv(AL_POSITION, listenerPos);
 
-		glm::vec3 upModel = glm::normalize(MatrixSoldierModel[1]);
-		glm::vec3 frontModel = glm::normalize(MatrixSoldierModel[2]);
+		glm::vec3 upModel = glm::normalize(modelMatrixMayow[1]);
+		glm::vec3 frontModel = glm::normalize(modelMatrixMayow[2]);
 
 		listenerOri[0] = frontModel.x;
 		listenerOri[1] = frontModel.y;
@@ -1590,6 +2493,17 @@ void applicationLoop() {
 		listenerOri[4] = upModel.y;
 		listenerOri[5] = upModel.z;
 
+		// Listener for the First person camera
+		// listenerPos[0] = camera->getPosition().x;
+		// listenerPos[1] = camera->getPosition().y;
+		// listenerPos[2] = camera->getPosition().z;
+		// alListenerfv(AL_POSITION, listenerPos);
+		// listenerOri[0] = camera->getFront().x;
+		// listenerOri[1] = camera->getFront().y;
+		// listenerOri[2] = camera->getFront().z;
+		// listenerOri[3] = camera->getUp().x;
+		// listenerOri[4] = camera->getUp().y;
+		// listenerOri[5] = camera->getUp().z;
 		alListenerfv(AL_ORIENTATION, listenerOri);
 
 		for(unsigned int i = 0; i < sourcesPlay.size(); i++){
