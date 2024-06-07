@@ -778,31 +778,50 @@ bool processInput(bool continueApplication) {
 		return false;
 	}
 
-	if(!iniciaPartida){
-		bool presionarEnter = glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS;
-		if(textureActivaID == textureInit1ID && presionarEnter){
-			iniciaPartida = true;
-			level=1;
-			textureActivaID = textureScreenID;
-		}
-		else if(!presionarOpcion && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
-			presionarOpcion = true;
-			level=2;
-			if(textureActivaID == textureInit1ID)
-				textureActivaID = textureInit2ID;
-			else if(textureActivaID == textureInit2ID)
-				textureActivaID = textureInit3ID;
-		}else if(!presionarOpcion && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
-			presionarOpcion = true;
-			level=3;
-			if(textureActivaID == textureInit2ID)
-				textureActivaID = textureInit2ID;
-			else if(textureActivaID == textureInit3ID)
-				textureActivaID = textureInit1ID;
-		}
-		else if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE)
-			presionarOpcion = false;
-	}
+	// Inicializar las texturas (ya lo tienes)
+// textureIntro1, textureIntro2, textureIntro3
+
+// Control de menú
+if(!iniciaPartida){
+    bool presionarEnter = glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS;
+
+    if(textureActivaID == textureInit1ID && presionarEnter){
+        iniciaPartida = true;
+        level = 1;
+        textureActivaID = textureScreenID;
+    }
+    else if(textureActivaID == textureInit2ID && presionarEnter){
+        iniciaPartida = true;
+        level = 2;
+        textureActivaID = textureScreenID;
+    }
+    else if(textureActivaID == textureInit3ID && presionarEnter){
+        iniciaPartida = true;
+        level = 3;
+        textureActivaID = textureScreenID;
+    }
+    else if(!presionarOpcion && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
+        if(textureActivaID == textureInit2ID){
+            textureActivaID = textureInit1ID;
+        }
+        else if(textureActivaID == textureInit3ID){
+            textureActivaID = textureInit2ID;
+        }
+        presionarOpcion = true;
+    }
+    else if(!presionarOpcion && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
+        if(textureActivaID == textureInit1ID){
+            textureActivaID = textureInit2ID;
+        }
+        else if(textureActivaID == textureInit2ID){
+            textureActivaID = textureInit3ID;
+        }
+        presionarOpcion = true;
+    }
+    else if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE){
+        presionarOpcion = false;
+    }
+}
 
 	if (glfwJoystickPresent(GLFW_JOYSTICK_1) == GL_TRUE) {
 		std::cout << "Esta presente el joystick" << std::endl;
