@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\13-Particulas.dir/objects.a
+C:\msys64\ucrt64\bin\ar.exe qc CMakeFiles\13-Particulas.dir/objects.a @CMakeFiles\13-Particulas.dir\objects1.rsp
+c:\msys64\ucrt64\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\13-Particulas.dir/objects.a -Wl,--no-whole-archive -o D:\PC\Documents\kiki\UNAM\GraficaAvanzada\proyecto2\proyectoCGA\ShootInTheSpace\bin\13-Particulas.exe -Wl,--out-implib,lib13-Particulas.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\13-Particulas.dir\linkLibs.rsp

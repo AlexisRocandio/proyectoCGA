@@ -1,0 +1,22 @@
+# Blender 4.0.2 MTL File: 'None'
+# www.blender.org
+
+newmtl Shape.002
+Ns 9.849158
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd rep_inf_trooper.png
+
+newmtl Shape.003
+Ns 9.849158
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd rep_inf_trooper.png

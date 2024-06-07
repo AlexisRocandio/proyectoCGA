@@ -1,3 +1,8 @@
-C:/Users/Administrador/Desktop/Proyecto final/ShootInTheSpace/build/CMakeFiles/proyecto.dir
-C:/Users/Administrador/Desktop/Proyecto final/ShootInTheSpace/build/CMakeFiles/edit_cache.dir
-C:/Users/Administrador/Desktop/Proyecto final/ShootInTheSpace/build/CMakeFiles/rebuild_cache.dir
+D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/build/CMakeFiles/edit_cache.dir
+D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/build/CMakeFiles/rebuild_cache.dir
+D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/build/CGALib/CMakeFiles/CGALib.dir
+D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/build/CGALib/CMakeFiles/edit_cache.dir
+D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/build/CGALib/CMakeFiles/rebuild_cache.dir
+D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/build/13-Particulas/CMakeFiles/13-Particulas.dir
+D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/build/13-Particulas/CMakeFiles/edit_cache.dir
+D:/PC/Documents/kiki/UNAM/GraficaAvanzada/proyecto2/proyectoCGA/ShootInTheSpace/build/13-Particulas/CMakeFiles/rebuild_cache.dir
