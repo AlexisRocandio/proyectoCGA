@@ -12,3 +12,4 @@ ShootInTheSpace/models/Soldier/Soldier.fbx
 *.json
 /ShootInTheSpace/bin
 /ShootInTheSpace/build/Proyecto/CMakeFiles
+/ShootInTheSpace/bin
