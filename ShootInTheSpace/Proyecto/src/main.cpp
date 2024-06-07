@@ -1601,7 +1601,8 @@ void renderSolidScene(){
 	if(modelMatrixMayow[3][1] < terrain.getHeightTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2])){
 		isJump = false;
 		modelMatrixMayow[3][1] = terrain.getHeightTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2]);
-	}*/
+	}*/ 
+
 	glm::mat4 modelMatrixMayowBody = glm::mat4(modelMatrixMayow);
 	modelMatrixMayowBody = glm::scale(modelMatrixMayowBody, glm::vec3(1.0f));
 	mayowModelAnimate.setAnimationIndex(animationMayowIndex);
