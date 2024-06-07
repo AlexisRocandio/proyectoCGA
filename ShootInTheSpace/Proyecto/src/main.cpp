@@ -350,7 +350,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	modelLampPost2.setShader(&shaderMulLighting);
 
 	// Mayow
-	mayowModelAnimate.loadModel("../models/mayow/personaje2.fbx");
+	mayowModelAnimate.loadModel("../models/Tie/Tie.fbx");
 	mayowModelAnimate.setShader(&shaderMulLighting);
 
 	// Terreno
@@ -943,19 +943,26 @@ bool processInput(bool continueApplication) {
 
 
 	// Controles de mayow
-	if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
+	if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
 		modelMatrixMayow = glm::rotate(modelMatrixMayow, 0.02f, glm::vec3(0, 1, 0));
 		animationMayowIndex = 0;
-	} else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
+	} else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
 		modelMatrixMayow = glm::rotate(modelMatrixMayow, -0.02f, glm::vec3(0, 1, 0));
 		animationMayowIndex = 0;
 	}
-	if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
+	if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
 		modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0, 0.0, 0.02));
 		animationMayowIndex = 0;
 	}
-	else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
+	else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
 		modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0, 0.0, -0.02));
+		animationMayowIndex = 0;
+	}else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
+		modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0, 0.5, 0.0));
+		animationMayowIndex = 0;
+	}
+	else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS){
+		modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(0.0, -0.5, 0.0));
 		animationMayowIndex = 0;
 	}
 
@@ -1050,7 +1057,7 @@ void renderSolidScene(){
 	/*****************************************
 	 * Objetos animados por huesos
 	 * **************************************/
-	glm::vec3 ejey = glm::normalize(terrain.getNormalTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2]));
+	/*glm::vec3 ejey = glm::normalize(terrain.getNormalTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2]));
 	glm::vec3 ejex = glm::vec3(modelMatrixMayow[0]);
 	glm::vec3 ejez = glm::normalize(glm::cross(ejex, ejey));
 	ejex = glm::normalize(glm::cross(ejey, ejez));
@@ -1062,9 +1069,9 @@ void renderSolidScene(){
 	if(modelMatrixMayow[3][1] < terrain.getHeightTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2])){
 		isJump = false;
 		modelMatrixMayow[3][1] = terrain.getHeightTerrain(modelMatrixMayow[3][0], modelMatrixMayow[3][2]);
-	}
+	}*/
 	glm::mat4 modelMatrixMayowBody = glm::mat4(modelMatrixMayow);
-	modelMatrixMayowBody = glm::scale(modelMatrixMayowBody, glm::vec3(0.021f));
+	modelMatrixMayowBody = glm::scale(modelMatrixMayowBody, glm::vec3(1.0f));
 	mayowModelAnimate.setAnimationIndex(animationMayowIndex);
 	mayowModelAnimate.render(modelMatrixMayowBody);
 	//animationMayowIndex = 1;
@@ -1139,7 +1146,7 @@ void applicationLoop() {
 
 
 
-	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(13.0f, 0.05f, -5.0f));
+	modelMatrixMayow = glm::translate(modelMatrixMayow, glm::vec3(13.0f, 10.0f, -5.0f));
 	modelMatrixMayow = glm::rotate(modelMatrixMayow, glm::radians(-90.0f), glm::vec3(0, 1, 0));
 
 
@@ -1417,12 +1424,12 @@ void applicationLoop() {
 				glm::radians(-90.0f), glm::vec3(1, 0, 0));
 		// Set the orientation of collider before doing the scale
 		mayowCollider.u = glm::quat_cast(modelmatrixColliderMayow);
-		modelmatrixColliderMayow = glm::scale(modelmatrixColliderMayow, glm::vec3(0.021, 0.021, 0.021));
+		modelmatrixColliderMayow = glm::scale(modelmatrixColliderMayow, glm::vec3(10.0f));
 		modelmatrixColliderMayow = glm::translate(modelmatrixColliderMayow,
 				glm::vec3(mayowModelAnimate.getObb().c.x,
 						mayowModelAnimate.getObb().c.y,
 						mayowModelAnimate.getObb().c.z));
-		mayowCollider.e = mayowModelAnimate.getObb().e * glm::vec3(0.021, 0.021, 0.021) * glm::vec3(0.787401574, 0.787401574, 0.787401574);
+		mayowCollider.e = mayowModelAnimate.getObb().e * glm::vec3(1.0, 1.0, 1.0);
 		mayowCollider.c = glm::vec3(modelmatrixColliderMayow[3]);
 		addOrUpdateColliders(collidersOBB, "mayow", mayowCollider, modelMatrixMayow);
 
