@@ -96,15 +96,30 @@ Cylinder rayModel(10, 10, 1.0, 1.0, 1.0);
 Box boxIntro;
 Box boxViewDepth;
 
-// Modelos animados
-// Lamps
-Model modelLamp1;
-Model modelLamp2;
-Model modelLampPost2;
-// tie
+glm::vec3 areaMin(-50.0f, 0.0f, -50.0f);
+glm::vec3 areaMax(50.0f, 0.0f, 50.0f);
+
+glm::vec3 playerPosition;
+
 Model TieModel;
 Model t47Model;
 Model xwingModel;
+Model bulletModel;
+// Declarar una lista para almacenar los proyectiles
+
+std::vector<glm::vec3> projectiles;
+std::vector<glm::vec3> projectileDirections;
+std::vector<bool> projectileActive;
+const float bulletSpeed = 0.02f; // Velocidad de las balas
+const float bulletRadius = 10.5f; // Radio de las balas
+const float modelRadius = 2.0f; // Radio de los modelos
+
+
+ALuint bulletSoundBuffer;
+ALuint bulletSoundSource;
+
+
+
 // Terrain model instance
 Terrain terrain(-1, -1, 200, 8, "../Textures/heightmap.png");
 
@@ -144,6 +159,11 @@ int lastMousePosY, offsetY = 0;
 // Model matrix definitions
 
 glm::mat4 MatrixTieModel = glm::mat4(1.0f);
+glm::mat4 Matrixt47Model = glm::mat4(1.0f);
+glm::mat4 MatrixXWingModel = glm::mat4(1.0f);
+glm::mat4 MatrixbulletModel = glm::mat4(1.0f);
+
+
 
 
 int animTie = 1;
@@ -158,16 +178,19 @@ std::ofstream myfile;
 std::string fileName = "";
 bool record = false;
 
+	// Renderizar modelos según el nivel de dificultad
+	std::vector<glm::vec3> positionsT47;
+	std::vector<glm::vec3> positionsXwing;
 
 // Posiciones para el nivel fácil
 std::vector<glm::vec3> easyPositionsT47 = {
-    glm::vec3(10.0f, 0.0f, -20.0f),
-    glm::vec3(15.0f, 0.0f, -25.0f)
+    glm::vec3(10.0f, 10.0f, -20.0f),
+    glm::vec3(-15.0f, 10.0f, -25.0f)
 };
 
 std::vector<glm::vec3> easyPositionsXwing = {
-    glm::vec3(20.0f, 0.0f, -30.0f),
-    glm::vec3(25.0f, 0.0f, -35.0f)
+    glm::vec3(30.0f, 5.0f, -30.0f),
+    glm::vec3(-35.0f, 5.0f, -35.0f)
 };
 
 // Posiciones para el nivel medio
@@ -199,23 +222,9 @@ std::vector<glm::vec3> hardPositionsXwing = {
 };
 
 
-
+void drawOBB(const AbstractModel::OBB &obb, const glm::vec3 &color);
 // Lamps position
-std::vector<glm::vec3> lamp1Position = {
-	glm::vec3(-7.03, 0, -19.14),
-	glm::vec3(24.41, 0, -34.57),
-	glm::vec3(-10.15, 0, -54.1)
-};
-std::vector<float> lamp1Orientation = {
-	-17.0, -82.67, 23.70
-};
-std::vector<glm::vec3> lamp2Position = {
-	glm::vec3(-36.52, 0, -23.24),
-	glm::vec3(-52.73, 0, -3.90)
-};
-std::vector<float> lamp2Orientation = {
-	21.37 + 90, -65.0 + 90
-};
+
 
 double deltaTime;
 double currTime, lastTime;
@@ -280,6 +289,11 @@ void initParticleBuffers();
 void init(int width, int height, std::string strTitle, bool bFullScreen);
 void destroy();
 bool processInput(bool continueApplication = true);
+void checkBulletCollisions();
+void shootBullet(const glm::vec3 &position, const glm::vec3 &direction);
+ALuint loadWavFile(const char *filename);
+void initSound();
+void drawBullet(const glm::vec3 &position);
 
 // Implementacion de todas las funciones.
 void init(int width, int height, std::string strTitle, bool bFullScreen) {
@@ -386,24 +400,16 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 	
 
-	//Lamps models
-	modelLamp1.loadModel("../models/Street-Lamp-Black/objLamp.obj");
-	modelLamp1.setShader(&shaderMulLighting);
-	modelLamp2.loadModel("../models/Street_Light/Lamp.obj");
-	modelLamp2.setShader(&shaderMulLighting);
-	modelLampPost2.loadModel("../models/Street_Light/LampPost.obj");
-	modelLampPost2.setShader(&shaderMulLighting);
 
 	// tie
-	TieModel.loadModel("../models/T47/T47.fbx");
+	TieModel.loadModel("../models/Tie/Tie.fbx");
 	TieModel.setShader(&shaderMulLighting);
 
-	t47Model.loadModel("../models/T47/t48.fbx");
+	t47Model.loadModel("../models/T47/T47.obj");
 	t47Model.setShader(&shaderMulLighting);
 
 	xwingModel.loadModel("../models/Xwing/XWing.fbx");
 	xwingModel.setShader(&shaderMulLighting);
-
 
 
 	// Terreno
@@ -491,7 +497,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	textureR.freeImage(); // Liberamos memoria
 
 	// Definiendo la textura
-	Texture textureG("../Textures/2024mapa.jpg");
+	Texture textureG("../Textures/Ground068_1K-JPG_Color.jpg");
 	textureG.loadImage(); // Cargar la textura
 	glGenTextures(1, &textureTerrainGID); // Creando el id de la textura del landingpad
 	glBindTexture(GL_TEXTURE_2D, textureTerrainGID); // Se enlaza la textura
@@ -510,7 +516,7 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	textureG.freeImage(); // Liberamos memoria
 
 	// Definiendo la textura
-	Texture textureB("../Textures/2024mapa.jpg");
+	Texture textureB("../Textures/metal-compartments_albedo.png");
 	textureB.loadImage(); // Cargar la textura
 	glGenTextures(1, &textureTerrainBID); // Creando el id de la textura del landingpad
 	glBindTexture(GL_TEXTURE_2D, textureTerrainBID); // Se enlaza la textura
@@ -749,13 +755,13 @@ void destroy() {
 	boxViewDepth.destroy();
 
 	// Custom objects Delete
-	modelLamp1.destroy();
-	modelLamp2.destroy();
-	modelLampPost2.destroy();
+
 	TieModel.destroy();
 
 	// Terrains objects Delete
 	terrain.destroy();
+	t47Model.destroy();
+	xwingModel.destroy();
 
 	// Textures Delete
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -906,11 +912,7 @@ if(!iniciaPartida){
 		if(buttons[0] == GLFW_PRESS)
 			std::cout << "Se presiona x" << std::endl;
 
-		if(!isJump && buttons[0] == GLFW_PRESS){
-			isJump = true;
-			startTimeJump = currTime;
-			tmv = 0;
-		}
+		
 	}
 
 	if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
@@ -945,11 +947,11 @@ if(!iniciaPartida){
 		animTie = 0;
 	}
 	if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
-		MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.0, 0.02));
+		MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.0, 0.2));
 		animTie = 0;
 	}
 	else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
-		MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.0, -0.02));
+		MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.0, -0.2));
 		animTie = 0;
 	}else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
 		MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.5, 0.0));
@@ -960,12 +962,11 @@ if(!iniciaPartida){
 		animTie = 0;
 	}
 
-	bool keySpaceStatus = glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
-	if(!isJump && keySpaceStatus){
-		isJump = true;
-		startTimeJump = currTime;
-		tmv = 0;
-	}
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+			glm::vec3 bulletPosition = glm::vec3(MatrixTieModel[3]);
+			glm::vec3 bulletDirection = glm::vec3(MatrixTieModel[0]);
+			shootBullet(bulletPosition, bulletDirection);
+   		}
 
 	glfwPollEvents();
 	return continueApplication;
@@ -974,25 +975,23 @@ if(!iniciaPartida){
 void prepareScene(){
 
 	terrain.setShader(&shaderTerrain);
-	//Lamp models
-	modelLamp1.setShader(&shaderMulLighting);
-	modelLamp2.setShader(&shaderMulLighting);
-	modelLampPost2.setShader(&shaderMulLighting);
+
 
 	//tie
 	TieModel.setShader(&shaderMulLighting);
+	t47Model.setShader(&shaderMulLighting);
+	xwingModel.setShader(&shaderMulLighting);
 }
 
 void prepareDepthScene(){
 
 	terrain.setShader(&shaderDepth);
 
-	//Lamp models
-	modelLamp1.setShader(&shaderDepth);
-	modelLamp2.setShader(&shaderDepth);
-	modelLampPost2.setShader(&shaderDepth);
+
 	//tie
 	TieModel.setShader(&shaderDepth);
+	t47Model.setShader(&shaderDepth);
+	xwingModel.setShader(&shaderDepth);
 }
 
 void renderSolidScene(){
@@ -1027,33 +1026,9 @@ void renderSolidScene(){
 	// Forze to enable the unit texture to 0 always ----------------- IMPORTANT
 	glActiveTexture(GL_TEXTURE0);
 
-	// Render for the eclipse car
+	
 
-	// Render lamp
-	for(int i = 0; i < lamp1Position.size(); i++){
-		lamp1Position[i].y = terrain.getHeightTerrain(lamp1Position[i].x, lamp1Position[i].z);
-		modelLamp1.setPosition(lamp1Position[i]);
-		modelLamp1.setScale(glm::vec3(0.5));
-		modelLamp1.setOrientation(glm::vec3(0, lamp1Orientation[i], 0));
-		modelLamp1.render();
-	}
-	for(int i = 0; i < lamp2Position.size(); i++){
-		lamp2Position[i].y = terrain.getHeightTerrain(lamp2Position[i].x, lamp2Position[i].z);
-		modelLamp2.setPosition(lamp2Position[i]);
-		modelLamp2.setScale(glm::vec3(0.5));
-		modelLamp2.setOrientation(glm::vec3(0, lamp2Orientation[i], 0));
-		modelLamp2.render();
-		modelLampPost2.setPosition(lamp2Position[i]);
-		modelLampPost2.setScale(glm::vec3(0.5));
-		modelLampPost2.setOrientation(glm::vec3(0, lamp2Orientation[i], 0));
-		modelLampPost2.render();
-	}
-
-
-	// Renderizar modelos según el nivel de dificultad
-	std::vector<glm::vec3> positionsT47;
-	std::vector<glm::vec3> positionsXwing;
-
+	
 	if (level == 1) { // Fácil
 		positionsT47 = easyPositionsT47;
 		positionsXwing = easyPositionsXwing;
@@ -1067,38 +1042,27 @@ void renderSolidScene(){
 
 	// Renderizar t47Model en las posiciones especificadas
 	for (const glm::vec3 &pos : positionsT47) {
-		glm::vec3 posInTerrain = pos;
-		posInTerrain.y = terrain.getHeightTerrain(pos.x, pos.z);
-		t47Model.setPosition(posInTerrain);
-		t47Model.setScale(glm::vec3(1.0f));
+		//float terrainHeight = terrain.getHeightTerrain(pos.x, pos.z);
+    // Establecer la posición del modelo, teniendo en cuenta la altura del terreno
+		t47Model.setPosition(glm::vec3(pos.x, pos.y, pos.z));
+		// Escalar el modelo si es necesario
+		t47Model.setScale(glm::vec3(10.0f));
+		// Renderizar el modelo
 		t47Model.render();
 	}
 
 	// Renderizar XwingModel en las posiciones especificadas
 	for (const glm::vec3 &pos : positionsXwing) {
-		glm::vec3 posInTerrain = pos;
-		posInTerrain.y = terrain.getHeightTerrain(pos.x, pos.z);
-		xwingModel.setPosition(posInTerrain);
+		//float terrainHeight = terrain.getHeightTerrain(pos.x, pos.z);
+    // Establecer la posición del modelo, teniendo en cuenta la altura del terreno
+		xwingModel.setPosition(glm::vec3(pos.x, pos.y, pos.z));
+		// Escalar el modelo si es necesario
 		xwingModel.setScale(glm::vec3(1.0f));
+		// Renderizar el modelo
 		xwingModel.render();
 	}
 
-	/*****************************************
-	 * Objetos animados por huesos
-	 * **************************************/
-	/*glm::vec3 ejey = glm::normalize(terrain.getNormalTerrain(MatrixTieModel[3][0], MatrixTieModel[3][2]));
-	glm::vec3 ejex = glm::vec3(MatrixTieModel[0]);
-	glm::vec3 ejez = glm::normalize(glm::cross(ejex, ejey));
-	ejex = glm::normalize(glm::cross(ejey, ejez));
-	MatrixTieModel[0] = glm::vec4(ejex, 0.0);
-	MatrixTieModel[1] = glm::vec4(ejey, 0.0);
-	MatrixTieModel[2] = glm::vec4(ejez, 0.0);
-	MatrixTieModel[3][1] = -GRAVITY * tmv * tmv + 3.5 * tmv + terrain.getHeightTerrain(MatrixTieModel[3][0], MatrixTieModel[3][2]);
-	tmv = currTime - startTimeJump;
-	if(MatrixTieModel[3][1] < terrain.getHeightTerrain(MatrixTieModel[3][0], MatrixTieModel[3][2])){
-		isJump = false;
-		MatrixTieModel[3][1] = terrain.getHeightTerrain(MatrixTieModel[3][0], MatrixTieModel[3][2]);
-	}*/
+	
 	glm::mat4 MatrixTieModelBody = glm::mat4(MatrixTieModel);
 	MatrixTieModelBody = glm::scale(MatrixTieModelBody, glm::vec3(1.0f));
 	TieModel.setAnimationIndex(animTie);
@@ -1273,18 +1237,21 @@ void applicationLoop() {
 
 		/*******************************************
 		 * Propiedades de neblina
-		 *******************************************/
+		 ******************************************
 		shaderMulLighting.setVectorFloat3("fogColor", glm::value_ptr(glm::vec3(0.5, 0.5, 0.4)));
 		shaderTerrain.setVectorFloat3("fogColor", glm::value_ptr(glm::vec3(0.5, 0.5, 0.4)));
 		shaderSkybox.setVectorFloat3("fogColor", glm::value_ptr(glm::vec3(0.5, 0.5, 0.4)));
-
+*/
+shaderMulLighting.setFloat("fogDensity", 0.0f);
+shaderTerrain.setFloat("fogDensity", 0.0f);
+shaderSkybox.setFloat("fogDensity", 0.0f);
 		/*******************************************
 		 * Propiedades Luz direccional
 		 *******************************************/
 		shaderMulLighting.setVectorFloat3("viewPos", glm::value_ptr(camera->getPosition()));
-		shaderMulLighting.setVectorFloat3("directionalLight.light.ambient", glm::value_ptr(glm::vec3(0.2, 0.2, 0.2)));
-		shaderMulLighting.setVectorFloat3("directionalLight.light.diffuse", glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
-		shaderMulLighting.setVectorFloat3("directionalLight.light.specular", glm::value_ptr(glm::vec3(0.2, 0.2, 0.2)));
+		shaderMulLighting.setVectorFloat3("directionalLight.light.ambient", glm::value_ptr(glm::vec3(0.2, 0.2, 0.2))); // Tonos morados
+		shaderMulLighting.setVectorFloat3("directionalLight.light.diffuse", glm::value_ptr(glm::vec3(0.5, 0.5, 0.5))); // Tonos morados más intensos
+		shaderMulLighting.setVectorFloat3("directionalLight.light.specular", glm::value_ptr(glm::vec3(0.2, 0.2, 0.2))); // Tonos morados más intensos
 		shaderMulLighting.setVectorFloat3("directionalLight.direction", glm::value_ptr(glm::vec3(-0.707106781, -0.707106781, 0.0)));
 
 		shaderTerrain.setVectorFloat3("viewPos", glm::value_ptr(camera->getPosition()));
@@ -1298,9 +1265,9 @@ void applicationLoop() {
 		 *******************************************/
 		shaderMulLighting.setInt("spotLightCount", 1);
 		shaderTerrain.setInt("spotLightCount", 1);
-		shaderMulLighting.setVectorFloat3("spotLights[0].light.ambient", glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		shaderMulLighting.setVectorFloat3("spotLights[0].light.diffuse", glm::value_ptr(glm::vec3(0.2, 0.3, 0.2)));
-		shaderMulLighting.setVectorFloat3("spotLights[0].light.specular", glm::value_ptr(glm::vec3(0.3, 0.3, 0.3)));
+		shaderMulLighting.setVectorFloat3("spotLights[0].light.ambient", glm::value_ptr(glm::vec3(0.2, 0.2, 0.2)));
+		shaderMulLighting.setVectorFloat3("spotLights[0].light.diffuse", glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
+		shaderMulLighting.setVectorFloat3("spotLights[0].light.specular", glm::value_ptr(glm::vec3(0.2, 0.2, 0.2)));
 		shaderMulLighting.setVectorFloat3("spotLights[0].direction", glm::value_ptr(glm::vec3(0, -1, 0)));
 		shaderMulLighting.setFloat("spotLights[0].constant", 1.0);
 		shaderMulLighting.setFloat("spotLights[0].linear", 0.07);
@@ -1320,52 +1287,7 @@ void applicationLoop() {
 		/*******************************************
 		 * Propiedades PointLights
 		 *******************************************/
-		shaderMulLighting.setInt("pointLightCount", lamp1Position.size() + lamp2Position.size());
-		shaderTerrain.setInt("pointLightCount", lamp1Position.size() + lamp2Position.size());
-		for(int i = 0; i < lamp1Position.size(); i++){
-			glm::mat4 matrixAdjustLamp = glm::mat4(1.0);
-			matrixAdjustLamp = glm::translate(matrixAdjustLamp, lamp1Position[i]);
-			matrixAdjustLamp = glm::rotate(matrixAdjustLamp, glm::radians(lamp1Orientation[i]), glm::vec3(0, 1, 0));
-			matrixAdjustLamp = glm::scale(matrixAdjustLamp, glm::vec3(0.5));
-			matrixAdjustLamp = glm::translate(matrixAdjustLamp, glm::vec3(0.0, 10.35, 0));
-			glm::vec3 lampPosition = glm::vec3(matrixAdjustLamp[3]);
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.ambient", glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.specular", glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(i) + "].position", glm::value_ptr(lampPosition));
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0);
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09);
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.02);
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.ambient", glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].light.specular", glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(i) + "].position", glm::value_ptr(lampPosition));
-			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0);
-			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.09);
-			shaderTerrain.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.02);
-		}
-		for(int i = 0; i < lamp2Position.size(); i++){
-			glm::mat4 matrixAdjustLamp = glm::mat4(1.0);
-			matrixAdjustLamp = glm::translate(matrixAdjustLamp, lamp2Position[i]);
-			matrixAdjustLamp = glm::rotate(matrixAdjustLamp, glm::radians(lamp2Orientation[i]), glm::vec3(0, 1, 0));
-			matrixAdjustLamp = glm::scale(matrixAdjustLamp, glm::vec3(1.0));
-			matrixAdjustLamp = glm::translate(matrixAdjustLamp, glm::vec3(0.75, 5.0, 0));
-			glm::vec3 lampPosition = glm::vec3(matrixAdjustLamp[3]);
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.ambient", glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.specular", glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderMulLighting.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].position", glm::value_ptr(lampPosition));
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].constant", 1.0);
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].linear", 0.09);
-			shaderMulLighting.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].quadratic", 0.02);
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.ambient", glm::value_ptr(glm::vec3(0.2, 0.16, 0.01)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.diffuse", glm::value_ptr(glm::vec3(0.4, 0.32, 0.02)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].light.specular", glm::value_ptr(glm::vec3(0.6, 0.58, 0.03)));
-			shaderTerrain.setVectorFloat3("pointLights[" + std::to_string(lamp1Position.size() + i) + "].position", glm::value_ptr(lampPosition));
-			shaderTerrain.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].constant", 1.0);
-			shaderTerrain.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].linear", 0.09);
-			shaderTerrain.setFloat("pointLights[" + std::to_string(lamp1Position.size() + i) + "].quadratic", 0.02);
-		}
+		
 
 		/************Render de imagen de frente**************/
 		if(!iniciaPartida){
@@ -1413,37 +1335,34 @@ void applicationLoop() {
 
 
 		// Lamps1 colliders
-		for (int i = 0; i < lamp1Position.size(); i++){
-			AbstractModel::OBB lampCollider;
-			glm::mat4 modelMatrixColliderLamp = glm::mat4(1.0);
-			modelMatrixColliderLamp = glm::translate(modelMatrixColliderLamp, lamp1Position[i]);
-			modelMatrixColliderLamp = glm::rotate(modelMatrixColliderLamp, glm::radians(lamp1Orientation[i]),
-					glm::vec3(0, 1, 0));
-			addOrUpdateColliders(collidersOBB, "lamp1-" + std::to_string(i), lampCollider, modelMatrixColliderLamp);
+		for (int i = 0; i < positionsT47.size(); i++){
+			AbstractModel::OBB T47Collider;
+			glm::mat4 Matrixt47ModelCollider = glm::mat4(1.0);
+			Matrixt47ModelCollider = glm::translate(Matrixt47ModelCollider, positionsT47[i]);
+			addOrUpdateColliders(collidersOBB, "T47-" + std::to_string(i), T47Collider, Matrixt47ModelCollider);
 			// Set the orientation of collider before doing the scale
-			lampCollider.u = glm::quat_cast(modelMatrixColliderLamp);
-			modelMatrixColliderLamp = glm::scale(modelMatrixColliderLamp, glm::vec3(0.5, 0.5, 0.5));
-			modelMatrixColliderLamp = glm::translate(modelMatrixColliderLamp, modelLamp1.getObb().c);
-			lampCollider.c = glm::vec3(modelMatrixColliderLamp[3]);
-			lampCollider.e = modelLamp1.getObb().e * glm::vec3(0.5, 0.5, 0.5);
-			std::get<0>(collidersOBB.find("lamp1-" + std::to_string(i))->second) = lampCollider;
+			T47Collider.u = glm::quat_cast(Matrixt47ModelCollider);
+			Matrixt47ModelCollider = glm::scale(Matrixt47ModelCollider, glm::vec3(10.0));
+			Matrixt47ModelCollider = glm::translate(Matrixt47ModelCollider, t47Model.getObb().c);
+			T47Collider.c = glm::vec3(Matrixt47ModelCollider[3]);
+			T47Collider.e = t47Model.getObb().e * glm::vec3(10.0);
+			std::get<0>(collidersOBB.find("T47-" + std::to_string(i))->second) = T47Collider;
 		}
 
 		// Lamps2 colliders
-		for (int i = 0; i < lamp2Position.size(); i++){
-			AbstractModel::OBB lampCollider;
-			glm::mat4 modelMatrixColliderLamp = glm::mat4(1.0);
-			modelMatrixColliderLamp = glm::translate(modelMatrixColliderLamp, lamp2Position[i]);
-			modelMatrixColliderLamp = glm::rotate(modelMatrixColliderLamp, glm::radians(lamp2Orientation[i]),
-					glm::vec3(0, 1, 0));
-			addOrUpdateColliders(collidersOBB, "lamp2-" + std::to_string(i), lampCollider, modelMatrixColliderLamp);
+		for (int i = 0; i < positionsXwing.size(); i++){
+			AbstractModel::OBB XwingCollider;
+			glm::mat4 MatrixXWingModelCollider = glm::mat4(1.0);
+			MatrixXWingModelCollider = glm::translate(MatrixXWingModelCollider, positionsXwing[i]);
+			addOrUpdateColliders(collidersOBB, "XWing-" + std::to_string(i), XwingCollider, MatrixXWingModelCollider);
 			// Set the orientation of collider before doing the scale
-			lampCollider.u = glm::quat_cast(modelMatrixColliderLamp);
-			modelMatrixColliderLamp = glm::scale(modelMatrixColliderLamp, glm::vec3(1.0, 1.0, 1.0));
-			modelMatrixColliderLamp = glm::translate(modelMatrixColliderLamp, modelLampPost2.getObb().c);
-			lampCollider.c = glm::vec3(modelMatrixColliderLamp[3]);
-			lampCollider.e = modelLampPost2.getObb().e * glm::vec3(1.0, 1.0, 1.0);
-			std::get<0>(collidersOBB.find("lamp2-" + std::to_string(i))->second) = lampCollider;
+			XwingCollider.u = glm::quat_cast(MatrixXWingModelCollider);
+			
+			MatrixXWingModelCollider = glm::scale(MatrixXWingModelCollider, glm::vec3(1.0, 1.0, 1.0));
+			MatrixXWingModelCollider = glm::translate(MatrixXWingModelCollider, xwingModel.getObb().c);
+			XwingCollider.c = glm::vec3(MatrixXWingModelCollider[3]);
+			XwingCollider.e = xwingModel.getObb().e * glm::vec3(1.0, 1.0, 1.0);
+			std::get<0>(collidersOBB.find("XWing-" + std::to_string(i))->second) = XwingCollider;
 		}
 
 		// Collider de tie
@@ -1485,6 +1404,7 @@ void applicationLoop() {
 			sphereCollider.enableWireMode();
 			sphereCollider.render(matrixCollider);
 		}
+ 
 
 		/**********Render de transparencias***************/
 		renderAlphaScene();
@@ -1620,6 +1540,101 @@ void applicationLoop() {
 			}
 		}
 	}
+}
+
+void shootBullet(const glm::vec3 &position, const glm::vec3 &direction) {
+    projectiles.push_back(position);
+    projectileDirections.push_back(direction);
+    projectileActive.push_back(true);
+	std::cout << "Bullet fired from position: " << position.x << ", " << position.y << ", " << position.z << std::endl;
+	//alSourcePlay(bulletSoundSource);
+}
+
+void updateProjectiles(float deltaTime) {
+   
+
+    for (size_t i = 0; i < projectiles.size(); ++i) {
+        projectiles[i] += projectileDirections[i] * bulletSpeed * deltaTime;
+    }
+}
+
+bool checkCollision(const glm::vec3 &bulletPos, float bulletRadius, const glm::vec3 &modelPos, float modelRadius) {
+    float distance = glm::length(bulletPos - modelPos);
+    return distance < (bulletRadius + modelRadius);
+}
+
+
+void checkBulletCollisions() {
+    
+    for (size_t i = 0; i < projectiles.size(); ++i) {
+        glm::vec3 bulletPos = projectiles[i];
+
+        for (size_t j = 0; j < positionsT47.size(); ++j) {
+            if (checkCollision(bulletPos, bulletRadius, positionsT47[j], modelRadius)) {
+                /*positionsT47.erase(positionsT47.begin() + j);
+                projectiles.erase(projectiles.begin() + i);
+                projectileDirections.erase(projectileDirections.begin() + i);
+                projectileActive.erase(projectileActive.begin() + i);
+                --i;
+                break;*/
+				std::cout << "Collision detected: Bullet hit T47 at position (" 
+                          << positionsT47[j].x << ", " << positionsT47[j].y << ", " << positionsT47[j].z << ")" << std::endl;
+            }
+        }
+
+        for (size_t k = 0; k < positionsXwing.size(); ++k) {
+            if (checkCollision(bulletPos, bulletRadius, positionsXwing[k], modelRadius)) {
+                //positionsXwing.erase(positionsXwing.begin() + k);
+                //projectiles.erase(projectiles.begin() + i);
+                //projectileDirections.erase(projectileDirections.begin() + i);
+                //projectileActive.erase(projectileActive.begin() + i);
+                //--i;
+                //break;
+				std::cout << "Collision detected: Bullet hit X-Wing at position (" 
+                          << positionsXwing[k].x << ", " << positionsXwing[k].y << ", " << positionsXwing[k].z << ")" << std::endl;
+
+            }
+        }
+    }
+}
+
+ALuint loadWavFile(const char *filename) {
+    ALuint buffer = alutCreateBufferFromFile(filename);
+    if (buffer == AL_NONE) {
+        std::cerr << "Failed to load sound file: " << filename << std::endl;
+    }
+    return buffer;
+}
+
+void initSound() {
+    bulletSoundBuffer = loadWavFile("../sounds/blaster.wav");
+
+    alGenSources(1, &bulletSoundSource);
+    alSourcei(bulletSoundSource, AL_BUFFER, bulletSoundBuffer);
+}
+
+void renderProjectiles() {
+    for (const auto &bulletPos : projectiles) {
+        drawBullet(bulletPos);
+    }
+}
+
+void drawBullet(const glm::vec3 &position) {
+// Mover y renderizar balas
+		for (size_t i = 0; i < projectiles.size(); ++i) {
+            if (!projectileActive[i]) continue;
+
+            projectiles[i] += projectileDirections[i] * bulletSpeed * (float)deltaTime;
+
+            // Renderizar la bala si está activa
+            if (projectileActive[i]) {
+                glm::mat4 bulletModelMatrix = glm::translate(glm::mat4(1.0f), projectiles[i]);
+                bulletModel.setPosition(projectiles[i]);
+                bulletModel.render(bulletModelMatrix);
+				// Verificar colisiones de balas
+        		checkBulletCollisions();
+            }
+        }
 }
 
 int main(int argc, char **argv) {
