@@ -950,10 +950,10 @@ if(!iniciaPartida){
 		MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.0, 0.2));
 		animTie = 0;
 	}
-	// else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
-	// 	MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.0, -0.2));
-	// 	animTie = 0;
-	// }
+	else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
+	MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.0, -0.2));
+		animTie = 0;
+	}
 	else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
 		MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.5, 0.0));
 		animTie = 0;
@@ -963,7 +963,7 @@ if(!iniciaPartida){
 		animTie = 0;
 	}
 	// Movimiento continuo hacia atrás
-MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.0, -0.8f));
+//MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.0, -0.8f));
 
 
     if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && currentTime - lastShootTime >= shootCooldown) {
@@ -971,6 +971,7 @@ MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.0, -0.8f));
         glm::vec3 bulletDirection = glm::normalize(glm::vec3(-MatrixTieModel[2])); // Dirección de la bala
 
         bullets.emplace_back(bulletPosition, bulletDirection, bulletSpeed);
+		shootBullet(bulletPosition,bulletDirection);
         lastShootTime = currentTime; // Actualiza el tiempo del último disparo
     }
 	glfwPollEvents();
@@ -1264,13 +1265,11 @@ MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.0, -0.2f * delt
 		/*******************************************
 		 * Propiedades de neblina
 		 ******************************************
-		shaderMulLighting.setVectorFloat3("fogColor", glm::value_ptr(glm::vec3(0.5, 0.5, 0.4)));
-		shaderTerrain.setVectorFloat3("fogColor", glm::value_ptr(glm::vec3(0.5, 0.5, 0.4)));
-		shaderSkybox.setVectorFloat3("fogColor", glm::value_ptr(glm::vec3(0.5, 0.5, 0.4)));
-*/
-		shaderMulLighting.setFloat("fogDensity", 0.0f);
-		shaderTerrain.setFloat("fogDensity", 0.0f);
-		shaderSkybox.setFloat("fogDensity", 0.0f);
+		
+*/shaderMulLighting.setVectorFloat3("fogColor", glm::value_ptr(glm::vec3(0.6, 0.0, 0.6)));
+		shaderTerrain.setVectorFloat3("fogColor", glm::value_ptr(glm::vec3(0.6, 0.0, 0.6)));
+		shaderSkybox.setVectorFloat3("fogColor", glm::value_ptr(glm::vec3(0.6, 0.0, 0.6)));
+
 		/*******************************************
 		 * Propiedades Luz direccional
 		 *******************************************/
