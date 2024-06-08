@@ -50,7 +50,7 @@
 //posición de camara
 #include "Headers/FirstPersonCamera.h"
 
-
+#include "Headers/Bullet.h"
 // OpenAL include
 #include <AL/alut.h>
 
@@ -91,6 +91,7 @@ Box boxHighway;
 Box boxLandingPad;
 Sphere esfera1(10, 10);
 Box boxCollider;
+Box bulletBox;
 Sphere sphereCollider(10, 10);
 Cylinder rayModel(10, 10, 1.0, 1.0, 1.0);
 Box boxIntro;
@@ -158,13 +159,15 @@ int lastMousePosY, offsetY = 0;
 
 // Model matrix definitions
 
-glm::mat4 MatrixTieModel = glm::mat4(1.0f);
+// Model matrix definitions
+std::vector<Bullet> bullets;  // Vector global para almacenar las balas
+glm::mat4 MatrixTieModel = glm::mat4(1.0f); 
 glm::mat4 Matrixt47Model = glm::mat4(1.0f);
 glm::mat4 MatrixXWingModel = glm::mat4(1.0f);
 glm::mat4 MatrixbulletModel = glm::mat4(1.0f);
 
-
-
+float lastShootTime = 0.0f;
+float shootCooldown = 0.2f; // Tiempo mínimo entre disparos en segundos
 
 int animTie = 1;
 float rotDartHead = 0.0, rotDartLeftArm = 0.0, rotDartLeftHand = 0.0, rotDartRightArm = 0.0, rotDartRightHand = 0.0, rotDartLeftLeg = 0.0, rotDartRightLeg = 0.0;
@@ -397,6 +400,10 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 
 	boxViewDepth.init();
 	boxViewDepth.setShader(&shaderViewDepth);
+
+	bulletBox.init();
+    bulletBox.setShader(&shader); // Usa el shader adecuado para el cubo
+    bulletBox.setColor(glm::vec4(1.0, 0.0, 0.0, 1.0)); // Color rojo para las balas
 
 	
 
@@ -838,7 +845,6 @@ bool processInput(bool continueApplication) {
 
 	// Inicializar las texturas (ya lo tienes)
 // textureIntro1, textureIntro2, textureIntro3
-
 // Control de menú
 if(!iniciaPartida){
     bool presionarEnter = glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS;
@@ -938,6 +944,7 @@ if(!iniciaPartida){
 		availableSave = true;
 
 
+ float currentTime = glfwGetTime(); // disparar bala con espacio
 	// Controles de tie
 	if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
 		MatrixTieModel = glm::rotate(MatrixTieModel, 0.02f, glm::vec3(0, 1, 0));
@@ -962,12 +969,18 @@ if(!iniciaPartida){
 		animTie = 0;
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-			glm::vec3 bulletPosition = glm::vec3(MatrixTieModel[3]);
-			glm::vec3 bulletDirection = glm::vec3(MatrixTieModel[0]);
-			shootBullet(bulletPosition, bulletDirection);
-   		}
+	 if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && currentTime - lastShootTime >= shootCooldown) {
+        isJump = true;
+        startTimeJump = currentTime;
+        tmv = 0;
 
+        glm::vec3 bulletPosition = glm::vec3(MatrixTieModel[3]); // Posición inicial de la bala
+        glm::vec3 bulletDirection = glm::normalize(glm::vec3(-MatrixTieModel[2])); // Dirección de la bala
+        float bulletSpeed = 10.0f; // Velocidad de la bala
+
+        bullets.emplace_back(bulletPosition, bulletDirection, bulletSpeed);
+        lastShootTime = currentTime; // Actualiza el tiempo del último disparo
+    }
 	glfwPollEvents();
 	return continueApplication;
 }
@@ -1020,13 +1033,27 @@ void renderSolidScene(){
 	shaderTerrain.setVectorFloat2("scaleUV", glm::value_ptr(glm::vec2(0, 0)));
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	    // Configurar vista y proyección
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)screenWidth / (float)screenHeight, 0.01f, 100.0f);
+    glm::mat4 view = camera->getViewMatrix();
+
+
 	/*******************************************
 	 * Custom objects obj
 	 *******************************************/
 	// Forze to enable the unit texture to 0 always ----------------- IMPORTANT
 	glActiveTexture(GL_TEXTURE0);
 
-	
+	 // Renderizar las balas
+        for (auto &bullet : bullets) { // Usa "auto &" en lugar de "const auto &"
+        if (bullet.active) {
+            glm::mat4 bulletModelMatrix = glm::translate(glm::mat4(1.0f), bullet.position);
+            bulletModelMatrix = glm::scale(bulletModelMatrix, glm::vec3(0.2f)); // Ajusta el tamaño de la bala
+            bulletBox.render(bulletModelMatrix);
+        }
+    }
 
 	
 	if (level == 1) { // Fácil
@@ -1126,7 +1153,7 @@ void renderScene(){
 
 void applicationLoop() {
 	bool psi = true;
-
+    lastTime = TimeManager::Instance().GetTime();
 	glm::vec3 axis;
 	glm::vec3 target;
 	float angleTarget;
@@ -1137,6 +1164,18 @@ void applicationLoop() {
 	int numberAdvance = 0;
 	int maxAdvance = 0.0;
 
+ // Actualizar posición de balas
+        for (auto &bullet : bullets) {
+            if (bullet.active) {
+                bullet.update(deltaTime);
+            }
+        }
+	
+        // Eliminar balas inactivas (fuera de la pantalla)
+        bullets.erase(
+            std::remove_if(bullets.begin(), bullets.end(), [](const Bullet &b) { return !b.active; }),
+            bullets.end()
+        );
 
 
 	MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(13.0f, 10.0f, -5.0f));
