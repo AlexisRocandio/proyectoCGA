@@ -477,6 +477,7 @@ Proyecto/CMakeFiles/Proyecto.dir/src/main.cpp.obj: ../Proyecto/src/main.cpp \
   ../CGALib/include/Headers/AnimationUtils.h \
   ../CGALib/include/Headers/Colisiones.h \
   ../CGALib/include/Headers/ShadowBox.h \
+  ../CGALib/include/Headers/Bullet.h \
   ../external/freealut/include/AL/alut.h \
   ../external/OpenAL/include/AL/al.h \
   ../external/OpenAL/include/AL/alc.h
@@ -1241,6 +1242,8 @@ C:/msys64/ucrt64/include/c++/13.2.0/cstring:
 ../external/glm/glm/ext/matrix_double3x4_precision.hpp:
 
 ../external/glm/glm/detail/type_mat3x2.inl:
+
+../CGALib/include/Headers/Bullet.h:
 
 ../external/glm/glm/ext/matrix_float3x3_precision.hpp:
 
