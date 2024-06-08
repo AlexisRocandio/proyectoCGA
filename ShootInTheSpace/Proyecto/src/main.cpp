@@ -129,7 +129,7 @@ ShadowBox * shadowBox;
 GLuint textureCespedID, textureWallID, textureWindowID, textureHighwayID, textureLandingPadID;
 GLuint textureTerrainRID, textureTerrainGID, textureTerrainBID, textureTerrainBlendMapID;
 GLuint skyboxTextureID;
-GLuint textureInit1ID, textureInit2ID,textureInit3ID, textureActivaID, textureScreenID;
+GLuint textureInit1ID, textureInit2ID, textureInit3ID, textureActivaID, textureScreenID;
 GLuint textureParticleFountainID;
 
 bool iniciaPartida = false, presionarOpcion = false;
@@ -156,8 +156,6 @@ std::string fileNames[6] = { "../Textures/Front_SBS Sci-Fi & Fantasy 3 Large.png
 bool exitApp = false;
 int lastMousePosX, offsetX = 0;
 int lastMousePosY, offsetY = 0;
-
-// Model matrix definitions
 
 // Model matrix definitions
 std::vector<Bullet> bullets;  // Vector global para almacenar las balas
@@ -224,10 +222,9 @@ std::vector<glm::vec3> hardPositionsXwing = {
     glm::vec3(45.0f, 0.0f, -55.0f)
 };
 
-
 void drawOBB(const AbstractModel::OBB &obb, const glm::vec3 &color);
-// Lamps position
 
+// Lamps position
 
 double deltaTime;
 double currTime, lastTime;
@@ -404,9 +401,6 @@ void init(int width, int height, std::string strTitle, bool bFullScreen) {
 	bulletBox.init();
     bulletBox.setShader(&shader); // Usa el shader adecuado para el cubo
     bulletBox.setColor(glm::vec4(1.0, 0.0, 0.0, 1.0)); // Color rojo para las balas
-
-	
-
 
 	// tie
 	TieModel.loadModel("../models/Tie/Tie.fbx");
@@ -943,8 +937,7 @@ if(!iniciaPartida){
 	}if(glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_RELEASE)
 		availableSave = true;
 
-
- float currentTime = glfwGetTime(); // disparar bala con espacio
+    float currentTime = glfwGetTime(); // disparar bala con espacio
 	// Controles de tie
 	if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
 		MatrixTieModel = glm::rotate(MatrixTieModel, 0.02f, glm::vec3(0, 1, 0));
@@ -957,10 +950,11 @@ if(!iniciaPartida){
 		MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.0, 0.2));
 		animTie = 0;
 	}
-	else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
-		MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.0, -0.2));
-		animTie = 0;
-	}else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
+	// else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
+	// 	MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.0, -0.2));
+	// 	animTie = 0;
+	// }
+	else if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
 		MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.5, 0.0));
 		animTie = 0;
 	}
@@ -968,15 +962,13 @@ if(!iniciaPartida){
 		MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, -0.5, 0.0));
 		animTie = 0;
 	}
+	// Movimiento continuo hacia atrás
+MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.0, -0.8f));
 
-	 if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && currentTime - lastShootTime >= shootCooldown) {
-        isJump = true;
-        startTimeJump = currentTime;
-        tmv = 0;
 
+    if (modelSelected == 0 && glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && currentTime - lastShootTime >= shootCooldown) {
         glm::vec3 bulletPosition = glm::vec3(MatrixTieModel[3]); // Posición inicial de la bala
         glm::vec3 bulletDirection = glm::normalize(glm::vec3(-MatrixTieModel[2])); // Dirección de la bala
-        float bulletSpeed = 10.0f; // Velocidad de la bala
 
         bullets.emplace_back(bulletPosition, bulletDirection, bulletSpeed);
         lastShootTime = currentTime; // Actualiza el tiempo del último disparo
@@ -1035,9 +1027,9 @@ void renderSolidScene(){
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	    // Configurar vista y proyección
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)screenWidth / (float)screenHeight, 0.01f, 100.0f);
-    glm::mat4 view = camera->getViewMatrix();
+	// Configurar vista y proyección
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)screenWidth / (float)screenHeight, 0.01f, 100.0f);
+	glm::mat4 view = camera->getViewMatrix();
 
 
 	/*******************************************
@@ -1046,31 +1038,29 @@ void renderSolidScene(){
 	// Forze to enable the unit texture to 0 always ----------------- IMPORTANT
 	glActiveTexture(GL_TEXTURE0);
 
-	 // Renderizar las balas
-        for (auto &bullet : bullets) { // Usa "auto &" en lugar de "const auto &"
-        if (bullet.active) {
-            glm::mat4 bulletModelMatrix = glm::translate(glm::mat4(1.0f), bullet.position);
-            bulletModelMatrix = glm::scale(bulletModelMatrix, glm::vec3(0.2f)); // Ajusta el tamaño de la bala
-            bulletBox.render(bulletModelMatrix);
-        }
-    }
+	// Renderizar las balas
+	for (auto &bullet : bullets) { // Usa "auto &" en lugar de "const auto &"
+		if (bullet.active) {
+			glm::mat4 bulletModelMatrix = glm::translate(glm::mat4(1.0f), bullet.position);
+			bulletModelMatrix = glm::scale(bulletModelMatrix, glm::vec3(0.2f)); // Ajusta el tamaño de la bala
+			bulletBox.render(bulletModelMatrix);
+		}
+	}
 
-	
 	if (level == 1) { // Fácil
 		positionsT47 = easyPositionsT47;
 		positionsXwing = easyPositionsXwing;
 	} else if (level == 2) { // Medio
-		positionsT47 = easyPositionsT47;
+		positionsT47 = mediumPositionsT47;
 		positionsXwing = mediumPositionsXwing;
 	} else if (level == 3) { // Difícil
-		positionsT47 = easyPositionsT47;
+		positionsT47 = hardPositionsT47;
 		positionsXwing = hardPositionsXwing;
 	}
 
 	// Renderizar t47Model en las posiciones especificadas
 	for (const glm::vec3 &pos : positionsT47) {
-		//float terrainHeight = terrain.getHeightTerrain(pos.x, pos.z);
-    // Establecer la posición del modelo, teniendo en cuenta la altura del terreno
+		// Establecer la posición del modelo, teniendo en cuenta la altura del terreno
 		t47Model.setPosition(glm::vec3(pos.x, pos.y, pos.z));
 		// Escalar el modelo si es necesario
 		t47Model.setScale(glm::vec3(10.0f));
@@ -1080,8 +1070,7 @@ void renderSolidScene(){
 
 	// Renderizar XwingModel en las posiciones especificadas
 	for (const glm::vec3 &pos : positionsXwing) {
-		//float terrainHeight = terrain.getHeightTerrain(pos.x, pos.z);
-    // Establecer la posición del modelo, teniendo en cuenta la altura del terreno
+		// Establecer la posición del modelo, teniendo en cuenta la altura del terreno
 		xwingModel.setPosition(glm::vec3(pos.x, pos.y, pos.z));
 		// Escalar el modelo si es necesario
 		xwingModel.setScale(glm::vec3(1.0f));
@@ -1089,12 +1078,10 @@ void renderSolidScene(){
 		xwingModel.render();
 	}
 
-	
 	glm::mat4 MatrixTieModelBody = glm::mat4(MatrixTieModel);
 	MatrixTieModelBody = glm::scale(MatrixTieModelBody, glm::vec3(1.0f));
 	TieModel.setAnimationIndex(animTie);
 	TieModel.render(MatrixTieModelBody);
-	//animTie = 1;
 
 	/*******************************************
 	 * Skybox
@@ -1164,24 +1151,24 @@ void applicationLoop() {
 	int numberAdvance = 0;
 	int maxAdvance = 0.0;
 
- // Actualizar posición de balas
-        for (auto &bullet : bullets) {
-            if (bullet.active) {
-                bullet.update(deltaTime);
-            }
-        }
-	
-        // Eliminar balas inactivas (fuera de la pantalla)
-        bullets.erase(
-            std::remove_if(bullets.begin(), bullets.end(), [](const Bullet &b) { return !b.active; }),
-            bullets.end()
-        );
+	// Actualizar posición de balas
+	for (auto &bullet : bullets) {
+		if (bullet.active) {
+			bullet.update(deltaTime);
+		}
+	}
+	// Movimiento continuo hacia atrás para la nave
+MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(0.0, 0.0, -0.2f * deltaTime));
 
+
+	// Eliminar balas inactivas (fuera de la pantalla)
+	bullets.erase(
+		std::remove_if(bullets.begin(), bullets.end(), [](const Bullet &b) { return !b.active; }),
+		bullets.end()
+	);
 
 	MatrixTieModel = glm::translate(MatrixTieModel, glm::vec3(13.0f, 10.0f, -5.0f));
 	MatrixTieModel = glm::rotate(MatrixTieModel, glm::radians(-90.0f), glm::vec3(0, 1, 0));
-
-
 
 	// Variables to interpolation key frames
 	fileName = "../animaciones/animation_dart_joints.txt";
@@ -1281,9 +1268,9 @@ void applicationLoop() {
 		shaderTerrain.setVectorFloat3("fogColor", glm::value_ptr(glm::vec3(0.5, 0.5, 0.4)));
 		shaderSkybox.setVectorFloat3("fogColor", glm::value_ptr(glm::vec3(0.5, 0.5, 0.4)));
 */
-shaderMulLighting.setFloat("fogDensity", 0.0f);
-shaderTerrain.setFloat("fogDensity", 0.0f);
-shaderSkybox.setFloat("fogDensity", 0.0f);
+		shaderMulLighting.setFloat("fogDensity", 0.0f);
+		shaderTerrain.setFloat("fogDensity", 0.0f);
+		shaderSkybox.setFloat("fogDensity", 0.0f);
 		/*******************************************
 		 * Propiedades Luz direccional
 		 *******************************************/
@@ -1590,10 +1577,10 @@ void shootBullet(const glm::vec3 &position, const glm::vec3 &direction) {
 }
 
 void updateProjectiles(float deltaTime) {
-   
-
-    for (size_t i = 0; i < projectiles.size(); ++i) {
-        projectiles[i] += projectileDirections[i] * bulletSpeed * deltaTime;
+    for (auto &bullet : bullets) {
+        if (bullet.active) {
+            bullet.update(deltaTime);
+        }
     }
 }
 
@@ -1605,17 +1592,13 @@ bool checkCollision(const glm::vec3 &bulletPos, float bulletRadius, const glm::v
 
 void checkBulletCollisions() {
     
-    for (size_t i = 0; i < projectiles.size(); ++i) {
-        glm::vec3 bulletPos = projectiles[i];
+    for (auto &bullet : bullets) {
+        if (!bullet.active) continue;
+        glm::vec3 bulletPos = bullet.position;
 
         for (size_t j = 0; j < positionsT47.size(); ++j) {
             if (checkCollision(bulletPos, bulletRadius, positionsT47[j], modelRadius)) {
-                /*positionsT47.erase(positionsT47.begin() + j);
-                projectiles.erase(projectiles.begin() + i);
-                projectileDirections.erase(projectileDirections.begin() + i);
-                projectileActive.erase(projectileActive.begin() + i);
-                --i;
-                break;*/
+                bullet.active = false;
 				std::cout << "Collision detected: Bullet hit T47 at position (" 
                           << positionsT47[j].x << ", " << positionsT47[j].y << ", " << positionsT47[j].z << ")" << std::endl;
             }
@@ -1623,12 +1606,7 @@ void checkBulletCollisions() {
 
         for (size_t k = 0; k < positionsXwing.size(); ++k) {
             if (checkCollision(bulletPos, bulletRadius, positionsXwing[k], modelRadius)) {
-                //positionsXwing.erase(positionsXwing.begin() + k);
-                //projectiles.erase(projectiles.begin() + i);
-                //projectileDirections.erase(projectileDirections.begin() + i);
-                //projectileActive.erase(projectileActive.begin() + i);
-                //--i;
-                //break;
+                bullet.active = false;
 				std::cout << "Collision detected: Bullet hit X-Wing at position (" 
                           << positionsXwing[k].x << ", " << positionsXwing[k].y << ", " << positionsXwing[k].z << ")" << std::endl;
 
@@ -1659,21 +1637,14 @@ void renderProjectiles() {
 }
 
 void drawBullet(const glm::vec3 &position) {
-// Mover y renderizar balas
-		for (size_t i = 0; i < projectiles.size(); ++i) {
-            if (!projectileActive[i]) continue;
-
-            projectiles[i] += projectileDirections[i] * bulletSpeed * (float)deltaTime;
-
-            // Renderizar la bala si está activa
-            if (projectileActive[i]) {
-                glm::mat4 bulletModelMatrix = glm::translate(glm::mat4(1.0f), projectiles[i]);
-                bulletModel.setPosition(projectiles[i]);
-                bulletModel.render(bulletModelMatrix);
-				// Verificar colisiones de balas
-        		checkBulletCollisions();
-            }
-        }
+	// Mover y renderizar balas
+	for (auto &bullet : bullets) {
+		if (bullet.active) {
+			glm::mat4 bulletModelMatrix = glm::translate(glm::mat4(1.0f), bullet.position);
+			bulletModelMatrix = glm::scale(bulletModelMatrix, glm::vec3(0.2f)); // Ajusta el tamaño de la bala
+			bulletBox.render(bulletModelMatrix);
+		}
+	}
 }
 
 int main(int argc, char **argv) {
